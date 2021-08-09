@@ -11,7 +11,7 @@ import './screens/about_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/available_screen.dart';
 import './screens/booking_screen.dart';
-import './screens/contact_us_screen.dart';
+import './screens/contact_screen.dart';
 import './screens/emergency_screen.dart';
 import './screens/first_aid_screen.dart';
 import './screens/get_started_screen.dart';
@@ -172,8 +172,8 @@ class _MyAppState extends State<MyApp> {
           AboutScreen.routeName: (_) => AboutScreen(),
           AuthScreen.routeName: (_) => AuthScreen(),
           AvailableScreen.routeName: (_) => AvailableScreen(),
-          BookNowScreen.routeName: (_) => BookNowScreen(),
-          ContactUsScreen.routeName: (_) => ContactUsScreen(),
+          BookingScreen.routeName: (_) => BookingScreen(),
+          ContactScreen.routeName: (_) => ContactScreen(),
           EmergencyScreen.routeName: (_) => EmergencyScreen(),
           FirstAidScreen.routeName: (_) => FirstAidScreen(),
           GetStartedScreen.routeName: (_) => GetStartedScreen(),

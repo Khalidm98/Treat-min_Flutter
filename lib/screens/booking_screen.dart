@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import './auth_screen.dart';
 import './tabs_screen.dart';
 import '../api/actions.dart';
 import '../localizations/app_localizations.dart';
@@ -11,19 +13,17 @@ import '../models/screens_data.dart';
 import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
 import '../widgets/book_now_dropdown_list.dart';
-import '../widgets/review_box.dart';
 import '../widgets/rating_hearts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../screens/auth_screen.dart';
+import '../widgets/review_box.dart';
 
-class BookNowScreen extends StatefulWidget {
+class BookingScreen extends StatefulWidget {
   static const String routeName = '/booking';
 
   @override
-  _BookNowScreenState createState() => _BookNowScreenState();
+  _BookingScreenState createState() => _BookingScreenState();
 }
 
-class _BookNowScreenState extends State<BookNowScreen> {
+class _BookingScreenState extends State<BookingScreen> {
   bool expansionListChanger = false;
   bool ddvExists = true;
   bool pickedDateCheck = true;

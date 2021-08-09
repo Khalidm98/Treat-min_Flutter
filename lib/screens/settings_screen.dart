@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import './about_screen.dart';
 import './auth_screen.dart';
-import './contact_us_screen.dart';
+import './contact_screen.dart';
 import './tabs_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
@@ -111,7 +111,7 @@ class SettingsScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               child: ListTile(
                 onTap: () {
-                  Navigator.of(context).pushNamed(ContactUsScreen.routeName);
+                  Navigator.of(context).pushNamed(ContactScreen.routeName);
                 },
                 tileColor: Colors.grey[300],
                 title: Text(t('contact_us'), style: theme.textTheme.headline6),

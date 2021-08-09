@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../localizations/app_localizations.dart';
 import '../widgets/background_image.dart';
 
-class ContactUsScreen extends StatelessWidget {
+class ContactScreen extends StatelessWidget {
   static const String routeName = '/contact-us';
 
   static const treatMinEmail = "noreply@treat-min.com";

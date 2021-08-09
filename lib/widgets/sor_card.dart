@@ -26,7 +26,7 @@ class SORCard extends StatefulWidget {
 class _SORCardState extends State<SORCard> {
   goToBooking() {
     Navigator.of(context).pushNamed(
-      BookNowScreen.routeName,
+      BookingScreen.routeName,
       arguments: BookNowScreenData(
         entityId: widget.entityId.toString(),
         entity: widget.entity,

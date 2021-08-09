@@ -27,7 +27,7 @@ class ClinicCard extends StatefulWidget {
 class _ClinicCardState extends State<ClinicCard> {
   goToBooking() {
     Navigator.of(context).pushNamed(
-      BookNowScreen.routeName,
+      BookingScreen.routeName,
       arguments: BookNowScreenData(
         entityId: widget.entityId.toString(),
         entity: widget.entity,
