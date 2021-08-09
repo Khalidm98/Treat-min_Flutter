@@ -38,7 +38,7 @@ class GetStartedScreen extends StatelessWidget {
                             Theme.of(context).accentColor,
                           ),
                           minimumSize: MaterialStateProperty.all<Size>(
-                            Size(0, 40),
+                            const Size(0, 40),
                           ),
                         ),
                         onPressed: () {
@@ -53,7 +53,7 @@ class GetStartedScreen extends StatelessWidget {
                         child: Text(t('explore')),
                         style: ButtonStyle(
                           minimumSize: MaterialStateProperty.all<Size>(
-                            Size(0, 40),
+                            const Size(0, 40),
                           ),
                         ),
                         onPressed: () {

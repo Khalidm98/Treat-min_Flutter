@@ -86,6 +86,7 @@ class _SelectScreenState extends State<SelectScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(t(strEntity))),
       body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => FocusScope.of(context).unfocus(),
         child: BackgroundImage(
           child: Column(

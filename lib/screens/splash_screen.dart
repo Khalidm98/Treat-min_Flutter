@@ -16,7 +16,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
-  Animation<double> _opacity;
+  Animation<double> _animation;
 
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(seconds: 2),
     );
 
-    _opacity = Tween(begin: 0.0, end: 1.0).animate(
+    _animation = Tween(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
@@ -62,9 +62,9 @@ class _SplashScreenState extends State<SplashScreen>
       body: BackgroundImage(
         child: Center(
           child: FadeTransition(
-            opacity: _opacity,
+            opacity: _animation,
             child: ScaleTransition(
-              scale: _opacity,
+              scale: _animation,
               child: Image.asset('assets/images/logo.png', width: width),
             ),
           ),

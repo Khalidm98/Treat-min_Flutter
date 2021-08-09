@@ -25,6 +25,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () => alert(context, t('email_delay')));
+
     _resendCode = TapGestureRecognizer()
       ..onTap = () async {
         prompt(
@@ -55,7 +57,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
           },
         );
       };
-    Future.delayed(Duration.zero, () => alert(context, t('email_delay')));
   }
 
   @override
@@ -87,12 +88,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
     final mode = args['mode'];
     if (mode == AuthMode.signUp) {
       final response = await AccountAPI.registerCode(context, email, code);
-      if (response == true) {
+      if (response) {
         Navigator.of(context).pushNamed(InfoScreen.routeName, arguments: email);
       }
     } else {
       final response = await AccountAPI.passwordCode(context, email, code);
-      if (response == true) {
+      if (response) {
         Navigator.of(context)
             .pushNamed(PasswordScreen.routeName, arguments: email);
       }

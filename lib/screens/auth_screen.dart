@@ -5,9 +5,9 @@ import './tabs_screen.dart';
 import './verification_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
-import '../widgets/input_field.dart';
 import '../utils/dialogs.dart';
 import '../widgets/background_image.dart';
+import '../widgets/input_field.dart';
 // import '../widgets/social_button.dart';
 
 enum AuthMode { signUp, login }
@@ -69,8 +69,7 @@ class _AuthScreenState extends State<AuthScreen>
       return t('email_empty');
     } else if (!email.contains('.') ||
         !email.contains('@') ||
-        email.indexOf('@') !=
-            email.lastIndexOf('@') ||
+        email.indexOf('@') != email.lastIndexOf('@') ||
         email.indexOf('@') > email.lastIndexOf('.')) {
       return t('email_valid');
     }
@@ -184,7 +183,7 @@ class _AuthScreenState extends State<AuthScreen>
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             onSaved: (value) => _data['email'] = value,
-                            validator: _emailValidator
+                            validator: _emailValidator,
                           ),
                         ),
                       ),

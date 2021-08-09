@@ -23,7 +23,7 @@ class InfoScreen extends StatefulWidget {
 }
 
 class _InfoScreenState extends State<InfoScreen> {
-  final Map<String, String> _account = {};
+  final Map<String, String> _account = Map();
   final GlobalKey<FormState> _formKey = GlobalKey();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _passController = TextEditingController();
@@ -34,21 +34,19 @@ class _InfoScreenState extends State<InfoScreen> {
   String _gender;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_date == null) {
-      final userData = Provider.of<UserData>(context, listen: false);
-      if (userData.isLoggedIn) {
-        if (userData.photo.isNotEmpty) {
-          _image = File(userData.photo);
-        }
-        _date = userData.birth;
-        _dateController.text = _date.toIso8601String().substring(0, 10);
-        _gender = userData.gender;
-      } else {
-        _date = DateTime.now().subtract(const Duration(days: 365 * 20 + 5));
-        _gender = 'i';
+  void initState() {
+    super.initState();
+    final userData = Provider.of<UserData>(context, listen: false);
+    if (userData.isLoggedIn) {
+      if (userData.photo.isNotEmpty) {
+        _image = File(userData.photo);
       }
+      _date = userData.birth;
+      _dateController.text = _date.toIso8601String().substring(0, 10);
+      _gender = userData.gender;
+    } else {
+      _date = DateTime.now().subtract(const Duration(days: 365 * 20 + 5));
+      _gender = 'i';
     }
   }
 
@@ -286,9 +284,7 @@ class _InfoScreenState extends State<InfoScreen> {
                       InputField(
                         label: t('name'),
                         textFormField: TextFormField(
-                          decoration: InputDecoration(
-                            hintText: t('name_hint'),
-                          ),
+                          decoration: InputDecoration(hintText: t('name_hint')),
                           initialValue: isLoggedIn ? userData.name : '',
                           textCapitalization: TextCapitalization.words,
                           textInputAction: TextInputAction.next,
@@ -339,7 +335,7 @@ class _InfoScreenState extends State<InfoScreen> {
                             label: t('birth'),
                             textFormField: TextFormField(
                               decoration:
-                                  InputDecoration(hintText: 'YYYY-MM-DD'),
+                                  const InputDecoration(hintText: 'YYYY-MM-DD'),
                               controller: _dateController,
                               onSaved: (_) {
                                 _account['birth'] =
