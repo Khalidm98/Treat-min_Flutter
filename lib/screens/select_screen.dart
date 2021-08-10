@@ -19,50 +19,51 @@ class SelectScreen extends StatefulWidget {
 }
 
 class _SelectScreenState extends State<SelectScreen> {
-  final controller = TextEditingController();
-  Entity entity = Entity.clinic;
-  AppData appData;
-  List list = [];
-  List searchList = [];
+  final _controller = TextEditingController();
+  Entity _entity = Entity.clinic;
+  AppData _appData;
+  List _list = [];
+  List _searchList = [];
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      entity = ModalRoute.of(context).settings.arguments;
-      appData = Provider.of<AppData>(context, listen: false);
-      list = appData.getEntities(context, entity);
-      if (list.isEmpty) {
-        final response = await EntityAPI.getEntities(context, entity);
+      _entity = ModalRoute.of(context).settings.arguments;
+      _appData = Provider.of<AppData>(context, listen: false);
+      _list = _appData.getEntities(context, _entity);
+      if (_list.isEmpty) {
+        final response = await EntityAPI.getEntities(context, _entity);
         if (!response) {
           Navigator.pop(context);
         }
-        list = appData.getEntities(context, entity);
+        _list = _appData.getEntities(context, _entity);
       }
-      searchList = json.decode(json.encode(list));
+      _searchList = json.decode(json.encode(_list));
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
-  void search(String keyword) {
-    searchList.clear();
+  void _search(String keyword) {
+    _searchList.clear();
     keyword = keyword.replaceAll(' ', '').toLowerCase();
     if (keyword.isEmpty) {
-      searchList = json.decode(json.encode(list));
-      setState(() {});
+      setState(() {
+        _searchList = json.decode(json.encode(_list));
+      });
       return;
     }
 
-    list.forEach((entity) {
+    _list.forEach((entity) {
       final name = entity['name'].replaceAll(' ', '').toLowerCase();
       if (name.contains(keyword)) {
-        searchList.add(entity);
+        _searchList.add(entity);
       }
     });
     setState(() {});
@@ -71,18 +72,16 @@ class _SelectScreenState extends State<SelectScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final strEntity = entityToString(entity);
+    final strEntity = entityToString(_entity);
     setAppLocalization(context);
 
-    if (list.isEmpty) {
+    if (_list.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text(t(strEntity))),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    final baseURL = 'https://www.treat-min.com/media/photos/$strEntity';
-    final maxID = appData.maxID(entity);
     return Scaffold(
       appBar: AppBar(title: Text(t(strEntity))),
       body: GestureDetector(
@@ -96,20 +95,19 @@ class _SelectScreenState extends State<SelectScreen> {
                 child: Theme(
                   data: inputTheme(context),
                   child: TextField(
-                    controller: controller,
+                    controller: _controller,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       hintText: t('search'),
-                      border: InputBorder.none,
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.cancel),
+                        icon: const Icon(Icons.cancel),
                         onPressed: () {
-                          controller.clear();
-                          search('');
+                          _controller.clear();
+                          _search('');
                         },
                       ),
                     ),
-                    onChanged: search,
+                    onChanged: _search,
                   ),
                 ),
               ),
@@ -120,28 +118,29 @@ class _SelectScreenState extends State<SelectScreen> {
                     return;
                   },
                   child: ListView.separated(
-                    itemCount: searchList.length,
+                    itemCount: _searchList.length,
                     separatorBuilder: (_, __) {
                       return const Divider(
                           thickness: 1, height: 1, indent: 10, endIndent: 10);
                     },
                     itemBuilder: (_, index) {
-                      final id = searchList[index]['id'];
+                      final id = _searchList[index]['id'];
                       return ListTile(
-                        leading: entity == Entity.service
+                        leading: _entity == Entity.service
                             ? Image.asset(
                                 'assets/icons/nav_bar/heart_outlined.png',
                                 width: 40,
                                 height: 40,
                               )
-                            : id <= maxID
+                            : id <= AppData.maxClinicID
                                 ? Image.asset(
                                     'assets/icons/$strEntity/$id.png',
                                     width: 40,
                                     height: 40,
                                   )
                                 : Image.network(
-                                    '$baseURL/$id.png',
+                                    'https://www.treat-min.com/'
+                                    'media/photos/$strEntity/$id.png',
                                     width: 40,
                                     height: 40,
                                     errorBuilder: (_, __, ___) {
@@ -153,15 +152,15 @@ class _SelectScreenState extends State<SelectScreen> {
                                     },
                                   ),
                         title: Text(
-                          searchList[index]['name'],
+                          _searchList[index]['name'],
                           textScaleFactor: 0.8,
                           style: theme.textTheme.headline5,
                         ),
                         onTap: () {
                           Navigator.of(context).pushNamed(
                             AvailableScreen.routeName,
-                            arguments:
-                                AvailableScreenData(searchList[index], entity),
+                            arguments: AvailableScreenData(
+                                _searchList[index], _entity),
                           );
                         },
                       );

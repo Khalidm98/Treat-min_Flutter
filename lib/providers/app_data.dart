@@ -8,6 +8,8 @@ import '../utils/enumerations.dart';
 import '../main.dart';
 
 class AppData with ChangeNotifier {
+  static const maxClinicID = 29;
+
   String language;
   bool notifications;
   bool isFirstRun;
@@ -207,17 +209,6 @@ class AppData with ChangeNotifier {
       notifyListeners();
 
       return updatedHospitals;
-    }
-  }
-
-  int maxID(Entity entity) {
-    switch (entity) {
-      case Entity.clinic:
-        return 29;
-      case Entity.service:
-        return 40;
-      default:
-        return 0;
     }
   }
 }
