@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './get_started_screen.dart';
-import './tabs_screen.dart';
+import 'get_started_screen.dart';
+import 'tabs_screen.dart';
 import '../providers/app_data.dart';
 import '../providers/user_data.dart';
 import '../widgets/background_image.dart';

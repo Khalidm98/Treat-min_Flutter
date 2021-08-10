@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './available_screen.dart';
+import 'available_screen.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
 import '../models/screens_data.dart';
@@ -12,7 +12,7 @@ import '../widgets/background_image.dart';
 import '../widgets/input_field.dart';
 
 class SelectScreen extends StatefulWidget {
-  static const String routeName = '/select';
+  static const routeName = '/select';
 
   @override
   _SelectScreenState createState() => _SelectScreenState();

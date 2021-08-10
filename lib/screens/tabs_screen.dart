@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import './account_screen.dart';
 
-import './main_screen.dart';
-import './settings_screen.dart';
+import 'account_screen.dart';
+import 'main_screen.dart';
+import 'settings_screen.dart';
 import '../widgets/navigation_bar.dart';
 
 class TabsScreen extends StatefulWidget {
-  static const String routeName = '/tabs';
+  static const routeName = '/tabs';
 
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -15,14 +15,19 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   final _slider = CarouselController();
-  int _currentIndex;
+  int _currentIndex = 0;
   int _nextIndex;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final int index = (ModalRoute.of(context).settings.arguments);
-    _currentIndex = index ?? 0;
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      final int index = ModalRoute.of(context).settings.arguments;
+      setState(() {
+        _currentIndex = index ?? 0;
+      });
+      _slider.jumpToPage(_currentIndex);
+    });
   }
 
   @override

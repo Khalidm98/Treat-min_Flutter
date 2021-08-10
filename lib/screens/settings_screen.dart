@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:provider/provider.dart';
 
-import './about_screen.dart';
-import './auth_screen.dart';
-import './contact_screen.dart';
-import './tabs_screen.dart';
+import 'about_screen.dart';
+import 'auth_screen.dart';
+import 'contact_screen.dart';
+import 'tabs_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
 import '../providers/app_data.dart';
@@ -43,7 +43,7 @@ class SettingsScreen extends StatelessWidget {
                 title: Text(t('language'), style: theme.textTheme.headline6),
                 trailing: ToggleSwitch(
                   labels: [t('english'), t('arabic')],
-                  minWidth: 75,
+                  minWidth: 80,
                   minHeight: 30,
                   cornerRadius: 10,
                   initialLabelIndex: appData.language == 'en' ? 0 : 1,
@@ -92,14 +92,11 @@ class SettingsScreen extends StatelessWidget {
                 tileColor: Colors.grey[300],
                 title: Text(t('about_us'), style: theme.textTheme.headline6),
                 trailing: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 5),
-                      child: CircleAvatar(
-                        radius: 15,
-                        backgroundColor: Colors.white,
-                      ),
+                    CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.white,
                     ),
                     Icon(Icons.help, size: 45, color: theme.primaryColorLight),
                   ],
@@ -116,15 +113,14 @@ class SettingsScreen extends StatelessWidget {
                 tileColor: Colors.grey[300],
                 title: Text(t('contact_us'), style: theme.textTheme.headline6),
                 trailing: Stack(
-                  alignment: AlignmentDirectional.center,
+                  alignment: Alignment.center,
                   children: [
-                    Container(
-                      height: 30,
-                      width: 35,
-                      color: Colors.white,
+                    Container(height: 30, width: 35, color: Colors.white),
+                    Icon(
+                      Icons.contact_mail,
+                      size: 40,
+                      color: theme.primaryColorLight,
                     ),
-                    Icon(Icons.contact_mail,
-                        size: 40, color: theme.primaryColorLight),
                   ],
                 ),
               ),

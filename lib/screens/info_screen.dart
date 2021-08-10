@@ -6,8 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import './password_screen.dart';
-import './tabs_screen.dart';
+import 'password_screen.dart';
+import 'tabs_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
 import '../providers/user_data.dart';
@@ -16,7 +16,7 @@ import '../widgets/background_image.dart';
 import '../widgets/input_field.dart';
 
 class InfoScreen extends StatefulWidget {
-  static const String routeName = '/info';
+  static const routeName = '/info';
 
   @override
   _InfoScreenState createState() => _InfoScreenState();

@@ -1,9 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import './auth_screen.dart' show AuthMode;
-import './info_screen.dart';
-import './password_screen.dart';
+import 'auth_screen.dart' show AuthMode;
+import 'info_screen.dart';
+import 'password_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
 import '../utils/dialogs.dart';
@@ -11,7 +11,7 @@ import '../widgets/background_image.dart';
 import '../widgets/input_field.dart';
 
 class VerificationScreen extends StatefulWidget {
-  static const String routeName = '/verify';
+  static const routeName = '/verify';
 
   @override
   _VerificationScreenState createState() => _VerificationScreenState();

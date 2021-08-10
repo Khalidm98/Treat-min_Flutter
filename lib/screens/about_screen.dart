@@ -3,7 +3,7 @@ import '../localizations/app_localizations.dart';
 import '../widgets/background_image.dart';
 
 class AboutScreen extends StatelessWidget {
-  static const String routeName = '/about';
+  static const routeName = '/about';
 
   Widget _arabicContent() {
     return Text(

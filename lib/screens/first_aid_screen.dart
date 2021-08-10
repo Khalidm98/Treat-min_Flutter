@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../localizations/app_localizations.dart';
 
 class FirstAidScreen extends StatelessWidget {
-  static const String routeName = '/first-aid';
+  static const routeName = '/first-aid';
 
   @override
   Widget build(BuildContext context) {

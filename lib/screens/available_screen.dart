@@ -17,7 +17,7 @@ import '../widgets/modal_sheet_list_tile.dart';
 import '../widgets/sor_card.dart';
 
 class AvailableScreen extends StatefulWidget {
-  static const String routeName = '/available';
+  static const routeName = '/available';
 
   @override
   _AvailableScreenState createState() => _AvailableScreenState();

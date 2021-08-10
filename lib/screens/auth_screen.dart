@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import './tabs_screen.dart';
-import './verification_screen.dart';
+import 'tabs_screen.dart';
+import 'verification_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
 import '../utils/dialogs.dart';
@@ -13,7 +13,7 @@ import '../widgets/input_field.dart';
 enum AuthMode { signUp, login }
 
 class AuthScreen extends StatefulWidget {
-  static const String routeName = '/auth';
+  static const routeName = '/auth';
 
   @override
   _AuthScreenState createState() => _AuthScreenState();

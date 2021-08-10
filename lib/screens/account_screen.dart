@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './auth_screen.dart';
-import './info_screen.dart';
+import 'auth_screen.dart';
+import 'info_screen.dart';
 import '../api/actions.dart';
 import '../localizations/app_localizations.dart';
 import '../providers/user_data.dart';

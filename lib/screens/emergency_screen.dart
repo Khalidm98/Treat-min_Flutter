@@ -4,14 +4,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import './first_aid_screen.dart';
+import 'first_aid_screen.dart';
 import '../localizations/app_localizations.dart';
 import '../utils/location.dart';
 import '../utils/maps.dart';
 import '../widgets/rating_hearts.dart';
 
 class EmergencyScreen extends StatefulWidget {
-  static const String routeName = '/emergency';
+  static const routeName = '/emergency';
 
   @override
   _EmergencyScreenState createState() => _EmergencyScreenState();

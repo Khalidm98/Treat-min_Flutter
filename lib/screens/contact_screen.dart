@@ -5,19 +5,15 @@ import '../localizations/app_localizations.dart';
 import '../widgets/background_image.dart';
 
 class ContactScreen extends StatelessWidget {
-  static const String routeName = '/contact-us';
+  static const routeName = '/contact-us';
 
-  static const treatMinEmail = "noreply@treat-min.com";
-  static const khalidEmail = "khalid.refaat98@gmail.com";
-  static const ahmedEmail = "ahmedkhaled11119999@gmail.com";
-  static const url = 'https://www.facebook.com/Treatmin';
+  static const treatMinEmail = 'noreply@treat-min.com';
+  static const khalidEmail = 'khalid.refaat98@gmail.com';
+  static const ahmedEmail = 'ahmedkhaled11119999@gmail.com';
+  static const facebookPage = 'https://www.facebook.com/Treatmin';
 
-  _openURL() async {
-    await launch(url);
-  }
-
-  _launchEmail(String email) async {
-    await launch("mailto:$email");
+  void _launchEmail(String email) async {
+    await launch('mailto:$email');
   }
 
   @override
@@ -48,7 +44,7 @@ class ContactScreen extends StatelessWidget {
                     t('visit_us'),
                     style: const TextStyle(color: Colors.white),
                   ),
-                  onTap: _openURL,
+                  onTap: () => launch(facebookPage),
                 ),
               ),
               Container(
@@ -60,16 +56,14 @@ class ContactScreen extends StatelessWidget {
                 child: ListTile(
                   leading: const Icon(Icons.alternate_email, size: 40),
                   title: Text(
-                    t("send_us_email"),
+                    t('send_us_email'),
                     style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
                     treatMinEmail,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  onTap: () {
-                    _launchEmail(treatMinEmail);
-                  },
+                  onTap: () => _launchEmail(treatMinEmail),
                 ),
               ),
               Container(
@@ -85,7 +79,7 @@ class ContactScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                   title: Text(
-                    t("developers"),
+                    t('developers'),
                     style: const TextStyle(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -106,18 +100,15 @@ class ContactScreen extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(10),
                   leading: Image.asset('assets/images/ahmed.png'),
                   title: Text(
-                    t("ahmed_name"),
-                    style: theme.textTheme.subtitle1
-                        .copyWith(fontSize: 17, color: Colors.white),
+                    t('ahmed_name'),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
                     ahmedEmail,
                     style: theme.textTheme.subtitle1
                         .copyWith(fontSize: 11, color: Colors.white),
                   ),
-                  onTap: () {
-                    _launchEmail(ahmedEmail);
-                  },
+                  onTap: () => _launchEmail(ahmedEmail),
                 ),
               ),
               Container(
@@ -130,18 +121,15 @@ class ContactScreen extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(10),
                   leading: Image.asset('assets/images/khalid.png'),
                   title: Text(
-                    t("khalid_name"),
-                    style: theme.textTheme.subtitle1
-                        .copyWith(fontSize: 17, color: Colors.white),
+                    t('khalid_name'),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
                     khalidEmail,
                     style: theme.textTheme.subtitle1
                         .copyWith(fontSize: 11, color: Colors.white),
                   ),
-                  onTap: () {
-                    _launchEmail(khalidEmail);
-                  },
+                  onTap: () => _launchEmail(khalidEmail),
                 ),
               ),
             ],

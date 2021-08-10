@@ -3,24 +3,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-import './localizations/app_localizations.dart';
-import './providers/app_data.dart';
-import './providers/user_data.dart';
+import 'localizations/app_localizations.dart';
+import 'providers/app_data.dart';
+import 'providers/user_data.dart';
 
-import './screens/about_screen.dart';
-import './screens/auth_screen.dart';
-import './screens/available_screen.dart';
-import './screens/booking_screen.dart';
-import './screens/contact_screen.dart';
-import './screens/emergency_screen.dart';
-import './screens/first_aid_screen.dart';
-import './screens/get_started_screen.dart';
-import './screens/info_screen.dart';
-import './screens/password_screen.dart';
-import './screens/select_screen.dart';
-import './screens/splash_screen.dart';
-import './screens/tabs_screen.dart';
-import './screens/verification_screen.dart';
+import 'screens/about_screen.dart';
+import 'screens/auth_screen.dart';
+import 'screens/available_screen.dart';
+import 'screens/booking_screen.dart';
+import 'screens/contact_screen.dart';
+import 'screens/emergency_screen.dart';
+import 'screens/first_aid_screen.dart';
+import 'screens/get_started_screen.dart';
+import 'screens/info_screen.dart';
+import 'screens/password_screen.dart';
+import 'screens/select_screen.dart';
+import 'screens/splash_screen.dart';
+import 'screens/tabs_screen.dart';
+import 'screens/verification_screen.dart';
 
 void main() {
   // Set device orientation to only Portrait up

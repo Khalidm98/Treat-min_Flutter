@@ -5,7 +5,7 @@ class BackgroundImage extends StatelessWidget {
   final Widget child;
   final DecorationPosition position;
 
-  BackgroundImage({@required this.child, this.key, this.position});
+  const BackgroundImage({@required this.child, this.key, this.position});
 
   @override
   Widget build(BuildContext context) {

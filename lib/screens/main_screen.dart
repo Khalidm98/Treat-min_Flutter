@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './emergency_screen.dart';
-import './select_screen.dart';
+import 'emergency_screen.dart';
+import 'select_screen.dart';
 import '../localizations/app_localizations.dart';
 import '../utils/dialogs.dart';
 import '../utils/enumerations.dart';

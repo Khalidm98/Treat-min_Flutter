@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import './auth_screen.dart';
-import './tabs_screen.dart';
+import 'auth_screen.dart';
+import 'tabs_screen.dart';
 import '../localizations/app_localizations.dart';
 import '../widgets/background_image.dart';
 
 class GetStartedScreen extends StatelessWidget {
-  static const String routeName = '/get-started';
+  static const routeName = '/get-started';
 
   @override
   Widget build(BuildContext context) {

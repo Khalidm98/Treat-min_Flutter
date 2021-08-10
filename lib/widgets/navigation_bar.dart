@@ -21,7 +21,7 @@ class NavigationBar extends StatefulWidget {
 }
 
 class _NavigationBarState extends State<NavigationBar> {
-  double width;
+  double width = 0;
   Color indicatorColor;
   int currentIndex;
 
@@ -31,21 +31,18 @@ class _NavigationBarState extends State<NavigationBar> {
   void initState() {
     super.initState();
     currentIndex = widget.index;
+    Future.delayed(Duration.zero, () {
+      setState(() {
+        width = MediaQuery.of(context).size.width;
+        indicatorColor = Theme.of(context).accentColor;
+      });
+    });
   }
 
   @override
   void didUpdateWidget(NavigationBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     currentIndex = widget.index;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (width == null) {
-      width = MediaQuery.of(context).size.width;
-      indicatorColor = Theme.of(context).accentColor;
-    }
   }
 
   void _select(int index) {
@@ -64,7 +61,7 @@ class _NavigationBarState extends State<NavigationBar> {
             top: 2,
             child: Row(
               children: items.map((item) {
-                final int index = items.indexOf(item);
+                final index = items.indexOf(item);
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => _select(index),
@@ -89,9 +86,8 @@ class _NavigationBarState extends State<NavigationBar> {
             ),
           ),
           AnimatedPositioned(
-            top: 0,
-            left: (width / items.length) * (currentIndex + 0.25),
             // (width / count) / 4 + (width / count) * index
+            left: (width / items.length) * (currentIndex + 0.25),
             duration: const Duration(milliseconds: 300),
             curve: Curves.linear,
             child: Container(

@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import './auth_screen.dart';
-import './tabs_screen.dart';
+import 'auth_screen.dart';
+import 'tabs_screen.dart';
 import '../api/actions.dart';
 import '../localizations/app_localizations.dart';
 import '../models/reviews.dart';
@@ -17,7 +17,7 @@ import '../widgets/rating_hearts.dart';
 import '../widgets/review_box.dart';
 
 class BookingScreen extends StatefulWidget {
-  static const String routeName = '/booking';
+  static const routeName = '/booking';
 
   @override
   _BookingScreenState createState() => _BookingScreenState();

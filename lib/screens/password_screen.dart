@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import './auth_screen.dart';
+import 'auth_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
 import '../providers/user_data.dart';
@@ -10,7 +10,7 @@ import '../widgets/background_image.dart';
 import '../widgets/input_field.dart';
 
 class PasswordScreen extends StatefulWidget {
-  static const String routeName = '/password';
+  static const routeName = '/password';
 
   @override
   _PasswordScreenState createState() => _PasswordScreenState();
