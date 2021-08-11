@@ -2,12 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../api/actions.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
 import '../models/card_data.dart';
 import '../models/cities_areas.dart';
-import '../models/screens_data.dart';
+import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
@@ -51,7 +50,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
   Area areaDDV;
   FiltrationHospital hospitalDDV;
   bool filterOn = false;
-  final myController = TextEditingController();
+  final _controller = TextEditingController();
 
   void onSortClick(BuildContext context, ThemeData theme) {
     showModalBottomSheet(
@@ -174,7 +173,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
   }
 
-  noEntityDetails(ThemeData theme, AvailableScreenData selectScreenData) {
+  noEntityDetails(ThemeData theme, EntityClass entity) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -195,7 +194,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         .copyWith(color: theme.accentColor),
                   ),
                   Text(
-                    "${getEntityTranslated(entityToString(selectScreenData.entity))}",
+                    "${getEntityTranslated(entityToString(entity is Clinic ? Entity.clinic : Entity.service))}",
                     style: theme.textTheme.headline6
                         .copyWith(color: theme.accentColor),
                   ),
@@ -249,25 +248,17 @@ class _AvailableScreenState extends State<AvailableScreen> {
     getAreas(context);
     getHospitals(context);
     Future.delayed(Duration.zero, () async {
-      AvailableScreenData selectScreenData =
-          ModalRoute.of(context).settings.arguments;
-      entityDetailResponse = await getCardDetails(selectScreenData);
+      final entity1 = ModalRoute.of(context).settings.arguments;
+      final response = await EntityAPI.getEntityDetails(context, entity1);
+      entityDetailResponse = response;
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
+    _controller.dispose();
     super.dispose();
-  }
-
-  Future<String> getCardDetails(AvailableScreenData selectScreenData) async {
-    final response = await ActionAPI.getEntityDetail(
-        entityToString(selectScreenData.entity),
-        selectScreenData.entityMap['id'].toString());
-    return response;
   }
 
   List filterCards(
@@ -400,8 +391,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
     final List<FiltrationHospital> updatedHospitalsList =
         appData.getUpdatedHospitals(context);
     final theme = Theme.of(context);
-    final selectScreenData =
-        (ModalRoute.of(context).settings.arguments) as AvailableScreenData;
+    final entity2 = ModalRoute.of(context).settings.arguments as EntityClass;
     setAppLocalization(context);
     onSearchTextChanged(String text) async {
       sorCardsListSearched.clear();
@@ -411,7 +401,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
         setState(() {});
         return;
       }
-      if (selectScreenData.entity == Entity.clinic) {
+      if (entity2 is Clinic) {
         clinicCardsListFiltered.forEach((clinicCard) {
           if (removeWhitespace(clinicCard.clinicCardData.price.toString())
                   .contains(text) ||
@@ -440,27 +430,27 @@ class _AvailableScreenState extends State<AvailableScreen> {
       return Scaffold(
           resizeToAvoidBottomPadding: false,
           appBar: AppBar(
-            title: Text(selectScreenData.entityMap['name']),
+            title: Text(entity2.name),
           ),
           body: Center(
             child: CircularProgressIndicator(),
           ));
     }
-    if (selectScreenData.entity == Entity.clinic) {
+    if (entity2 is Clinic) {
       clinicData = clinicCardFromJson(entityDetailResponse);
       if (clinicData.details.length == 0) {
         return Scaffold(
             resizeToAvoidBottomPadding: false,
             appBar: AppBar(
-              title: Text(selectScreenData.entityMap['name']),
+              title: Text(entity2.name),
             ),
-            body: noEntityDetails(theme, selectScreenData));
+            body: noEntityDetails(theme, entity2));
       }
       clinicCardsList =
           clinicData.details.asMap().entries.map<ClinicCard>((detail) {
         return ClinicCard(
-          entityId: selectScreenData.entityMap['id'],
-          entity: selectScreenData.entity,
+          entityId: entity2.id,
+          entity: Entity.clinic,
           clinicCardData: clinicData.details[detail.key],
         );
       }).toList();
@@ -468,8 +458,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
         clinicCardsListFiltered =
             clinicDataFiltered.asMap().entries.map<ClinicCard>((detail) {
           return ClinicCard(
-            entityId: selectScreenData.entityMap['id'],
-            entity: selectScreenData.entity,
+            entityId: entity2.id,
+            entity: Entity.clinic,
             clinicCardData: clinicDataFiltered[detail.key],
           );
         }).toList();
@@ -482,14 +472,14 @@ class _AvailableScreenState extends State<AvailableScreen> {
         return Scaffold(
             resizeToAvoidBottomPadding: false,
             appBar: AppBar(
-              title: Text(selectScreenData.entityMap['name']),
+              title: Text(entity2.name),
             ),
-            body: noEntityDetails(theme, selectScreenData));
+            body: noEntityDetails(theme, entity2));
       }
       sorCardsList = sorData.details.asMap().entries.map<SORCard>((detail) {
         return SORCard(
-          entityId: selectScreenData.entityMap['id'],
-          entity: selectScreenData.entity,
+          entityId: entity2.id,
+          entity: Entity.service,
           sorCardData: sorData.details[detail.key],
         );
       }).toList();
@@ -497,8 +487,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
         sorCardsListFiltered =
             sorDataFiltered.asMap().entries.map<SORCard>((detail) {
           return SORCard(
-            entityId: selectScreenData.entityMap['id'],
-            entity: selectScreenData.entity,
+            entityId: entity2.id,
+            entity: Entity.service,
             sorCardData: sorDataFiltered[detail.key],
           );
         }).toList();
@@ -508,7 +498,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      appBar: AppBar(title: Text(selectScreenData.entityMap['name'])),
+      appBar: AppBar(title: Text(entity2.name)),
       body: BackgroundImage(
         child: GestureDetector(
           onTap: () {
@@ -781,14 +771,11 @@ class _AvailableScreenState extends State<AvailableScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              if (selectScreenData.entity == Entity.clinic) {
+                              if (entity2 is Clinic) {
                                 sorCardsListSearched.clear();
                                 clinicCardsListSearched.clear();
-                                clinicDataFiltered = filterCards(
-                                    cityDDV,
-                                    areaDDV,
-                                    hospitalDDV,
-                                    selectScreenData.entity);
+                                clinicDataFiltered = filterCards(cityDDV,
+                                    areaDDV, hospitalDDV, Entity.clinic);
                               } else {
                                 sorCardsListSearched.clear();
                                 clinicCardsListSearched.clear();
@@ -796,7 +783,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                   cityDDV,
                                   areaDDV,
                                   hospitalDDV,
-                                  selectScreenData.entity,
+                                  Entity.clinic,
                                 );
                               }
                               filterClicked = true;
@@ -813,17 +800,17 @@ class _AvailableScreenState extends State<AvailableScreen> {
                   child: Theme(
                     data: inputTheme(context),
                     child: TextField(
-                      controller: myController,
+                      controller: _controller,
                       decoration: InputDecoration(
                           prefixIcon: Icon(Icons.search),
-                          hintText: selectScreenData.entity == Entity.clinic
+                          hintText: entity2 is Clinic
                               ? t('search_clinic')
                               : t('search_service'),
                           border: InputBorder.none,
                           suffixIcon: IconButton(
                             icon: Icon(Icons.cancel),
                             onPressed: () {
-                              myController.clear();
+                              _controller.clear();
                               onSearchTextChanged('');
                             },
                           )),
@@ -838,11 +825,11 @@ class _AvailableScreenState extends State<AvailableScreen> {
                 },
                 child: Expanded(
                   child: (clinicCardsListSearched.length == 0 &&
-                              selectScreenData.entity == Entity.clinic &&
-                              myController.text.isNotEmpty) ||
+                              entity2 is Clinic &&
+                              _controller.text.isNotEmpty) ||
                           (sorCardsListSearched.length == 0 &&
-                              selectScreenData.entity == Entity.service &&
-                              myController.text.isNotEmpty)
+                              entity2 is Service &&
+                              _controller.text.isNotEmpty)
                       ? Center(
                           child: Text(
                           t("no_search_results"),
@@ -850,14 +837,13 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         ))
                       : clinicCardsListSearched.length != 0 ||
                               sorCardsListSearched.length != 0 ||
-                              myController.text.isNotEmpty
+                              _controller.text.isNotEmpty
                           ? ListView.builder(
-                              itemCount:
-                                  selectScreenData.entity == Entity.clinic
-                                      ? clinicCardsListSearched.length
-                                      : sorCardsListSearched.length,
+                              itemCount: entity2 is Clinic
+                                  ? clinicCardsListSearched.length
+                                  : sorCardsListSearched.length,
                               itemBuilder: (context, index) {
-                                return selectScreenData.entity == Entity.clinic
+                                return entity2 is Clinic
                                     ? clinicListSorter(
                                         context, clinicCardsListSearched)[index]
                                     : sorListSorter(
@@ -865,23 +851,20 @@ class _AvailableScreenState extends State<AvailableScreen> {
                               },
                             )
                           : (clinicCardsListFiltered.length == 0 &&
-                                      selectScreenData.entity ==
-                                          Entity.clinic) ||
+                                      entity2 is Clinic) ||
                                   (sorCardsListFiltered.length == 0 &&
-                                      selectScreenData.entity == Entity.service)
+                                      entity2 is Service)
                               ? Center(
                                   child: Text(
                                   t("no_results"),
                                   style: theme.textTheme.headline6,
                                 ))
                               : ListView.builder(
-                                  itemCount:
-                                      selectScreenData.entity == Entity.clinic
-                                          ? clinicCardsListFiltered.length
-                                          : sorCardsListFiltered.length,
+                                  itemCount: entity2 is Clinic
+                                      ? clinicCardsListFiltered.length
+                                      : sorCardsListFiltered.length,
                                   itemBuilder: (context, index) {
-                                    return selectScreenData.entity ==
-                                            Entity.clinic
+                                    return entity2 is Clinic
                                         ? clinicListSorter(context,
                                             clinicCardsListFiltered)[index]
                                         : sorListSorter(context,

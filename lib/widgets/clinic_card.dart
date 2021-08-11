@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'rating_hearts.dart';
 import '../localizations/app_localizations.dart';
 import '../models/card_data.dart';
-import '../models/screens_data.dart';
+import '../models/entity.dart';
 import '../screens/booking_screen.dart';
 import '../utils/enumerations.dart';
 

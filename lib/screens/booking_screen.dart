@@ -6,10 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_screen.dart';
 import 'tabs_screen.dart';
 import '../api/actions.dart';
+import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
 import '../models/reviews.dart';
 import '../models/schedule.dart';
-import '../models/screens_data.dart';
+import '../models/entity.dart';
 import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
 import '../widgets/book_now_dropdown_list.dart';
@@ -296,9 +297,9 @@ class _BookingScreenState extends State<BookingScreen> {
         String entityId = receivedData.entityId;
         String detailId = receivedData.cardDetail.id.toString();
         schedulesResponse =
-            ActionAPI.getEntitySchedule(entity, entityId, detailId);
+            EntityAPI.getEntitySchedules(entity, entityId, detailId);
         reviewsResponse =
-            ActionAPI.getEntityReviews(entity, entityId, detailId);
+            EntityAPI.getEntityReviews(entity, entityId, detailId);
       }
     });
   }

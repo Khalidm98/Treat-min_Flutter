@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'available_screen.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
-import '../models/screens_data.dart';
+import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
@@ -33,10 +33,7 @@ class _SelectScreenState extends State<SelectScreen> {
       _appData = Provider.of<AppData>(context, listen: false);
       _list = _appData.getEntities(context, _entity);
       if (_list.isEmpty) {
-        final response = await EntityAPI.getEntities(context, _entity);
-        if (!response) {
-          Navigator.pop(context);
-        }
+        await EntityAPI.getEntities(context, _entity);
         _list = _appData.getEntities(context, _entity);
       }
       _searchList = json.decode(json.encode(_list));
@@ -159,8 +156,9 @@ class _SelectScreenState extends State<SelectScreen> {
                         onTap: () {
                           Navigator.of(context).pushNamed(
                             AvailableScreen.routeName,
-                            arguments: AvailableScreenData(
-                                _searchList[index], _entity),
+                            arguments: _entity == Entity.clinic
+                                ? Clinic.fromJSON(_searchList[index])
+                                : Service.fromJSON(_searchList[index]),
                           );
                         },
                       );

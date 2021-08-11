@@ -18,38 +18,6 @@ class ActionAPI {
     await Provider.of<UserData>(context, listen: false).refreshToken();
   }
 
-  static Future<String> getEntityDetail(String entity, String entityId) async {
-    final response = await http.get(
-      '$_baseURL/$entity/$entityId/details/',
-    );
-    if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes);
-    }
-    return "Something went wrong";
-  }
-
-  static Future<String> getEntitySchedule(
-      String entity, String entityId, String entityDetailId) async {
-    final response = await http.get(
-      '$_baseURL/$entity/$entityId/details/$entityDetailId/schedules/',
-    );
-    if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes);
-    }
-    return "Something went wrong";
-  }
-
-  static Future<String> getEntityReviews(
-      String entity, String entityId, String entityDetailId) async {
-    final response = await http.get(
-      '$_baseURL/$entity/$entityId/details/$entityDetailId/reviews/',
-    );
-    if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes);
-    }
-    return "Something went wrong";
-  }
-
   static Future reserveAppointment(
       BuildContext context,
       String entity,

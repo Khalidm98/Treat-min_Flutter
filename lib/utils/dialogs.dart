@@ -65,3 +65,7 @@ void prompt(BuildContext context, String message,
 void somethingWentWrong(BuildContext context) {
   alert(context, t('wrong'));
 }
+
+void somethingWentWrongPop(BuildContext context) {
+  alert(context, t('wrong'), onOk: () => Navigator.pop(context));
+}
