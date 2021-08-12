@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../models/card_data.dart';
-import '../models/cities_areas.dart';
 import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../utils/dialogs.dart';
@@ -18,28 +17,26 @@ class EntityAPI {
   //   "accept": "application/json"
   // };
 
-  static Future<bool> getCities(BuildContext context) async {
+  static Future<void> getCities(BuildContext context) async {
     final response = await http.get('$_baseURL/cities/');
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setCities(
-          citiesFromJson(utf8.decode(response.bodyBytes)).cities, context);
-      return true;
+        json.decode(utf8.decode(response.bodyBytes))['cities'],
+      );
     } else {
       somethingWentWrong(context);
     }
-    return false;
   }
 
-  static Future<bool> getAreas(BuildContext context) async {
+  static Future<void> getAreas(BuildContext context) async {
     final response = await http.get('$_baseURL/areas/');
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setAreas(
-          areasFromJson(utf8.decode(response.bodyBytes)).areas, context);
-      return true;
+        json.decode(utf8.decode(response.bodyBytes))['areas'],
+      );
     } else {
       somethingWentWrong(context);
     }
-    return false;
   }
 
   static Future<bool> getHospitals(BuildContext context) async {

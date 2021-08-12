@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'available_screen.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
-import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
@@ -155,9 +154,7 @@ class _SelectScreenState extends State<SelectScreen> {
                         onTap: () {
                           Navigator.of(context).pushNamed(
                             AvailableScreen.routeName,
-                            arguments: _entity == Entity.clinic
-                                ? Clinic.fromJson(_searchList[index])
-                                : Service.fromJson(_searchList[index]),
+                            arguments: _searchList[index],
                           );
                         },
                       );

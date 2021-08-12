@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
 import '../models/card_data.dart';
-import '../models/cities_areas.dart';
+import '../models/filtration.dart';
 import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../utils/enumerations.dart';
@@ -26,6 +26,11 @@ class AvailableScreen extends StatefulWidget {
 class _AvailableScreenState extends State<AvailableScreen> {
   // LatLng _location;
   String _response = '';
+  AppData _appData;
+
+  List<City> _cities;
+  List<Area> _areas;
+
   bool filterClicked = false;
   bool searchOn = false;
 
@@ -56,14 +61,14 @@ class _AvailableScreenState extends State<AvailableScreen> {
   @override
   void initState() {
     super.initState();
-    getCities(context);
-    getAreas(context);
     getHospitals(context);
     Future.delayed(Duration.zero, () async {
-      final entity1 = ModalRoute.of(context).settings.arguments;
-      setState(() async {
-        _response = await EntityAPI.getEntityDetails(context, entity1);
-      });
+      final entity = ModalRoute.of(context).settings.arguments;
+      _response = await EntityAPI.getEntityDetails(context, entity);
+      setState(() {});
+
+      _appData = Provider.of<AppData>(context, listen: false);
+      _prepareFilters();
     });
   }
 
@@ -71,6 +76,20 @@ class _AvailableScreenState extends State<AvailableScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _prepareFilters() async {
+    _cities = _appData.getCities(context);
+    if (_cities.isEmpty) {
+      await EntityAPI.getCities(context);
+      _cities = _appData.getCities(context);
+    }
+
+    _areas = _appData.getAreas(context);
+    if (_areas.isEmpty) {
+      await EntityAPI.getAreas(context);
+      _areas = _appData.getAreas(context);
+    }
   }
 
   void onSortClick(BuildContext context, ThemeData theme) {
@@ -241,20 +260,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
     return t("available_clinics");
   }
 
-  Future<void> getCities(BuildContext context) async {
-    final response = await EntityAPI.getCities(context);
-    if (!response) {
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> getAreas(BuildContext context) async {
-    final response = await EntityAPI.getAreas(context);
-    if (!response) {
-      Navigator.pop(context);
-    }
-  }
-
   Future<void> getHospitals(BuildContext context) async {
     final response = await EntityAPI.getHospitals(context);
     if (!response) {
@@ -387,13 +392,13 @@ class _AvailableScreenState extends State<AvailableScreen> {
   @override
   Widget build(BuildContext context) {
     final appData = Provider.of<AppData>(context);
-    final List<City> citiesList = appData.getCities(context);
     final List<Area> updatedAreasList = appData.getUpdatedAreas(context);
     final List<FiltrationHospital> updatedHospitalsList =
         appData.getUpdatedHospitals(context);
     final theme = Theme.of(context);
     final entity2 = ModalRoute.of(context).settings.arguments as EntityClass;
     setAppLocalization(context);
+
     onSearchTextChanged(String text) async {
       sorCardsListSearched.clear();
       clinicCardsListSearched.clear();
@@ -438,11 +443,9 @@ class _AvailableScreenState extends State<AvailableScreen> {
       clinicData = ClinicCardData.fromJson(json.decode(_response));
       if (clinicData.details.length == 0) {
         return Scaffold(
-            resizeToAvoidBottomPadding: false,
-            appBar: AppBar(
-              title: Text(entity2.name),
-            ),
-            body: noEntityDetails(theme, entity2));
+          appBar: AppBar(title: Text(entity2.name)),
+          body: noEntityDetails(theme, entity2),
+        );
       }
       clinicCardsList =
           clinicData.details.asMap().entries.map<ClinicCard>((detail) {
@@ -638,7 +641,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                       appData.updateAreas(cityDDV);
                                       appData.updateHospitals(cityDDV, areaDDV);
                                     },
-                                    items: citiesList
+                                    items: _cities
                                         .map<DropdownMenuItem>((City city) {
                                       return DropdownMenuItem(
                                           value: city,

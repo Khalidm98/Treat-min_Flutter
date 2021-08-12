@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/card_data.dart';
-import '../models/cities_areas.dart';
+import '../models/filtration.dart';
 import '../models/entity.dart';
 import '../utils/enumerations.dart';
 import '../main.dart';
 
 class AppData with ChangeNotifier {
-  static const maxClinicID = 29;
-
   String language;
   bool notifications;
   bool isFirstRun;
-  List<bool> sortingVars = [false, false];
-  List<FiltrationHospital> hospitals = [];
-  List<FiltrationHospital> updatedHospitals = [];
-  List<City> cities = [];
-  List<Area> areas = [];
-  List<Area> updatedAreas = [];
+
+  static const maxClinicID = 29;
   List<Clinic> clinics = [];
   List<Service> services = [];
+  List<City> cities = [];
+  List<Area> areas = [];
+  List<FiltrationHospital> hospitals = [];
+
+  List<Area> updatedAreas = [];
+  List<FiltrationHospital> updatedHospitals = [];
+  List<bool> sortingVars = [false, false];
 
   String entityTranslation(String multilingualString, String langCode) {
     int dashIndex = multilingualString.indexOf("-");
@@ -75,22 +76,13 @@ class AppData with ChangeNotifier {
     notifyListeners();
   }
 
-  void setCities(List list, BuildContext context) {
-    final langCode = Localizations.localeOf(context).languageCode;
-    for (int i = 0; i < list.length; i++) {
-      list[i].name = entityTranslation(list[i].name, langCode);
-    }
-    cities = list;
+  void setCities(List list) {
+    list.forEach((json) => cities.add(City.fromJson(json)));
     notifyListeners();
   }
 
-  void setAreas(List<Area> list, BuildContext context) {
-    final langCode = Localizations.localeOf(context).languageCode;
-    for (int i = 0; i < list.length; i++) {
-      list[i].name = entityTranslation(list[i].name, langCode);
-    }
-    areas = list;
-    updatedAreas = list;
+  void setAreas(List list) {
+    list.forEach((json) => areas.add(Area.fromJson(json)));
     notifyListeners();
   }
 
@@ -98,6 +90,27 @@ class AppData with ChangeNotifier {
     hospitals = list;
     updatedHospitals = list;
     notifyListeners();
+  }
+
+  List translate(BuildContext context, List list) {
+    final langCode = Localizations.localeOf(context).languageCode;
+    if (langCode == 'en') {
+      list.forEach((element) {
+        if (element.name.contains('-')) {
+          element.name =
+              element.name.substring(0, element.name.lastIndexOf('-') - 1);
+        }
+      });
+    } else {
+      list.forEach((element) {
+        if (element.name.contains('-')) {
+          element.name =
+              element.name.substring(element.name.lastIndexOf('-') + 2);
+        }
+      });
+      list.sort((a, b) => a.name.compareTo(b.name));
+    }
+    return list;
   }
 
   List getEntities(BuildContext context, Entity entity) {
@@ -111,40 +124,20 @@ class AppData with ChangeNotifier {
         break;
     }
 
-    final langCode = Localizations.localeOf(context).languageCode;
     if (entity == Entity.clinic) {
-      if (langCode == 'en') {
-        list.forEach((entity) {
-          if (entity.name.contains('-')) {
-            entity.name =
-                entity.name.substring(0, entity.name.lastIndexOf('-') - 1);
-          }
-        });
-      } else {
-        list.forEach((entity) {
-          if (entity.name.contains('-')) {
-            entity.name =
-                entity.name.substring(entity.name.lastIndexOf('-') + 2);
-          }
-        });
-        list.sort((a, b) => a.name.compareTo(b.name));
-      }
+      return translate(context, list);
     }
     return list;
   }
 
   List getCities(BuildContext context) {
-    List<City> list = [];
-    list = cities;
-    //  final langCode = Localizations.localeOf(context).languageCode;
-    return list;
+    final list = cities.map((entity) => entity).toList();
+    return translate(context, list);
   }
 
   List getAreas(BuildContext context) {
-    List<Area> list = [];
-    list = areas;
-    //  final langCode = Localizations.localeOf(context).languageCode;
-    return list;
+    final list = areas.map((entity) => entity).toList();
+    return translate(context, list);
   }
 
   void changeSortPriceLowHigh() {
