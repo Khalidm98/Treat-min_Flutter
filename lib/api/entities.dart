@@ -46,7 +46,9 @@ class EntityAPI {
     final response = await http.get('$_baseURL/hospitals/');
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setHospitals(
-          hospitalsFromJson(utf8.decode(response.bodyBytes)).hospitals);
+        Hospitals.fromJson(json.decode(utf8.decode(response.bodyBytes)))
+            .hospitals,
+      );
       return true;
     } else {
       somethingWentWrong(context);

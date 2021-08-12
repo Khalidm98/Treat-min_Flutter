@@ -4,26 +4,20 @@ class EntityClass {
   int id;
   String name;
 
-  EntityClass(this.id, this.name);
-
-  EntityClass.fromJSON(Map<String, dynamic> json)
+  EntityClass.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = json['name'];
 }
 
 class Clinic extends EntityClass {
-  Clinic(id, name) : super(id, name);
-
-  Clinic.fromJSON(Map<String, dynamic> json) : super.fromJSON(json);
+  Clinic.fromJson(Map<String, dynamic> json) : super.fromJson(json);
 
   @override
   String toString() => 'clinics/$id';
 }
 
 class Service extends EntityClass {
-  Service(id, name) : super(id, name);
-
-  Service.fromJSON(Map<String, dynamic> json) : super.fromJSON(json);
+  Service.fromJson(Map<String, dynamic> json) : super.fromJson(json);
 
   @override
   String toString() => 'services/$id';

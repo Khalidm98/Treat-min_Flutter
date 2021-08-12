@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/card_data.dart';
 import '../models/cities_areas.dart';
+import '../models/entity.dart';
 import '../utils/enumerations.dart';
 import '../main.dart';
 
@@ -19,8 +19,8 @@ class AppData with ChangeNotifier {
   List<City> cities = [];
   List<Area> areas = [];
   List<Area> updatedAreas = [];
-  List clinics = [];
-  List services = [];
+  List<Clinic> clinics = [];
+  List<Service> services = [];
 
   String entityTranslation(String multilingualString, String langCode) {
     int dashIndex = multilingualString.indexOf("-");
@@ -66,10 +66,10 @@ class AppData with ChangeNotifier {
   void setEntities(Entity entity, List list) {
     switch (entity) {
       case Entity.clinic:
-        clinics = list;
+        list.forEach((json) => clinics.add(Clinic.fromJson(json)));
         break;
       case Entity.service:
-        services = list;
+        list.forEach((json) => services.add(Service.fromJson(json)));
         break;
     }
     notifyListeners();
@@ -104,10 +104,10 @@ class AppData with ChangeNotifier {
     List list = [];
     switch (entity) {
       case Entity.clinic:
-        list = json.decode(json.encode(clinics));
+        list = clinics.map((entity) => entity).toList();
         break;
       case Entity.service:
-        list = json.decode(json.encode(services));
+        list = services.map((entity) => entity).toList();
         break;
     }
 
@@ -115,19 +115,19 @@ class AppData with ChangeNotifier {
     if (entity == Entity.clinic) {
       if (langCode == 'en') {
         list.forEach((entity) {
-          if (entity['name'].contains('-')) {
-            entity['name'] = entity['name']
-                .substring(0, entity['name'].lastIndexOf('-') - 1);
+          if (entity.name.contains('-')) {
+            entity.name =
+                entity.name.substring(0, entity.name.lastIndexOf('-') - 1);
           }
         });
       } else {
         list.forEach((entity) {
-          if (entity['name'].contains('-')) {
-            entity['name'] =
-                entity['name'].substring(entity['name'].lastIndexOf('-') + 2);
+          if (entity.name.contains('-')) {
+            entity.name =
+                entity.name.substring(entity.name.lastIndexOf('-') + 2);
           }
         });
-        list.sort((a, b) => a['name'].compareTo(b['name']));
+        list.sort((a, b) => a.name.compareTo(b.name));
       }
     }
     return list;

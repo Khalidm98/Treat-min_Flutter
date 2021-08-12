@@ -1,13 +1,3 @@
-import 'dart:convert';
-
-ClinicCardData clinicCardFromJson(String str) =>
-    ClinicCardData.fromJson(json.decode(str));
-
-SORCardData sorCardFromJson(String str) =>
-    SORCardData.fromJson(json.decode(str));
-
-Hospitals hospitalsFromJson(String str) => Hospitals.fromJson(json.decode(str));
-
 class ClinicCardData {
   ClinicCardData({
     this.entity,

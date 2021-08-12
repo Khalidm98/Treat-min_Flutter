@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +25,7 @@ class AvailableScreen extends StatefulWidget {
 
 class _AvailableScreenState extends State<AvailableScreen> {
   // LatLng _location;
-  String entityDetailResponse = "";
+  String _response = '';
   bool filterClicked = false;
   bool searchOn = false;
 
@@ -51,6 +52,26 @@ class _AvailableScreenState extends State<AvailableScreen> {
   FiltrationHospital hospitalDDV;
   bool filterOn = false;
   final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getCities(context);
+    getAreas(context);
+    getHospitals(context);
+    Future.delayed(Duration.zero, () async {
+      final entity1 = ModalRoute.of(context).settings.arguments;
+      setState(() async {
+        _response = await EntityAPI.getEntityDetails(context, entity1);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void onSortClick(BuildContext context, ThemeData theme) {
     showModalBottomSheet(
@@ -241,26 +262,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getCities(context);
-    getAreas(context);
-    getHospitals(context);
-    Future.delayed(Duration.zero, () async {
-      final entity1 = ModalRoute.of(context).settings.arguments;
-      final response = await EntityAPI.getEntityDetails(context, entity1);
-      entityDetailResponse = response;
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   List filterCards(
       City city, Area area, FiltrationHospital hospital, Entity entity) {
     List filteredClinics = [];
@@ -426,18 +427,15 @@ class _AvailableScreenState extends State<AvailableScreen> {
       }
     }
 
-    if (entityDetailResponse.isEmpty) {
+    if (_response.isEmpty) {
       return Scaffold(
-          resizeToAvoidBottomPadding: false,
-          appBar: AppBar(
-            title: Text(entity2.name),
-          ),
-          body: Center(
-            child: CircularProgressIndicator(),
-          ));
+        appBar: AppBar(title: Text(entity2.name)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
+
     if (entity2 is Clinic) {
-      clinicData = clinicCardFromJson(entityDetailResponse);
+      clinicData = ClinicCardData.fromJson(json.decode(_response));
       if (clinicData.details.length == 0) {
         return Scaffold(
             resizeToAvoidBottomPadding: false,
@@ -467,7 +465,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
         clinicCardsListFiltered = clinicCardsList;
       }
     } else {
-      sorData = sorCardFromJson(entityDetailResponse);
+      sorData = SORCardData.fromJson(json.decode(_response));
       if (sorData.details.length == 0) {
         return Scaffold(
             resizeToAvoidBottomPadding: false,

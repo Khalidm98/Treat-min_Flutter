@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +35,7 @@ class _SelectScreenState extends State<SelectScreen> {
         await EntityAPI.getEntities(context, _entity);
         _list = _appData.getEntities(context, _entity);
       }
-      _searchList = json.decode(json.encode(_list));
+      _searchList = _list.map((entity) => entity).toList();
       setState(() {});
     });
   }
@@ -52,13 +51,13 @@ class _SelectScreenState extends State<SelectScreen> {
     keyword = keyword.replaceAll(' ', '').toLowerCase();
     if (keyword.isEmpty) {
       setState(() {
-        _searchList = json.decode(json.encode(_list));
+        _searchList = _list.map((entity) => entity).toList();
       });
       return;
     }
 
     _list.forEach((entity) {
-      final name = entity['name'].replaceAll(' ', '').toLowerCase();
+      final name = entity.name.replaceAll(' ', '').toLowerCase();
       if (name.contains(keyword)) {
         _searchList.add(entity);
       }
@@ -121,7 +120,7 @@ class _SelectScreenState extends State<SelectScreen> {
                           thickness: 1, height: 1, indent: 10, endIndent: 10);
                     },
                     itemBuilder: (_, index) {
-                      final id = _searchList[index]['id'];
+                      final id = _searchList[index].id;
                       return ListTile(
                         leading: _entity == Entity.service
                             ? Image.asset(
@@ -149,7 +148,7 @@ class _SelectScreenState extends State<SelectScreen> {
                                     },
                                   ),
                         title: Text(
-                          _searchList[index]['name'],
+                          _searchList[index].name,
                           textScaleFactor: 0.8,
                           style: theme.textTheme.headline5,
                         ),
@@ -157,8 +156,8 @@ class _SelectScreenState extends State<SelectScreen> {
                           Navigator.of(context).pushNamed(
                             AvailableScreen.routeName,
                             arguments: _entity == Entity.clinic
-                                ? Clinic.fromJSON(_searchList[index])
-                                : Service.fromJSON(_searchList[index]),
+                                ? Clinic.fromJson(_searchList[index])
+                                : Service.fromJson(_searchList[index]),
                           );
                         },
                       );
