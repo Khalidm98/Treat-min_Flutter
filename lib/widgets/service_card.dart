@@ -6,11 +6,11 @@ import '../models/card_data.dart';
 import '../models/entity.dart';
 import '../screens/booking_screen.dart';
 
-class ClinicCard extends StatelessWidget {
-  final ClinicDetail detail;
-  final int clinicId;
+class ServiceCard extends StatelessWidget {
+  final ServiceDetail detail;
+  final int serviceId;
 
-  const ClinicCard({@required this.detail, @required this.clinicId});
+  const ServiceCard({@required this.detail, @required this.serviceId});
 
   @override
   Widget build(BuildContext context) {
@@ -20,40 +20,17 @@ class ClinicCard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
           padding: const EdgeInsets.all(10),
           color: theme.primaryColor,
           width: double.infinity,
           child: Text(
             detail.hospital.name,
             style: theme.textTheme.headline6.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
           ),
         ),
+        Container(height: 2, color: Colors.white),
         Container(
-          padding: const EdgeInsets.all(10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(2.0),
-            border: Border.all(color: theme.primaryColorLight),
-          ),
-          child: Column(
-            children: [
-              Text(
-                detail.doctor.name,
-                style: theme.textTheme.headline5,
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                detail.doctor.title,
-                style: theme.textTheme.subtitle2,
-                textAlign: TextAlign.center,
-              )
-            ],
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
           color: Colors.white,
           child: IntrinsicHeight(
             child: Row(
@@ -128,7 +105,7 @@ class ClinicCard extends StatelessWidget {
                         Navigator.of(context).pushNamed(
                           BookingScreen.routeName,
                           arguments: BookNowScreenData(
-                            entityId: clinicId.toString(),
+                            entityId: serviceId.toString(),
                             cardDetail: detail,
                           ),
                         );

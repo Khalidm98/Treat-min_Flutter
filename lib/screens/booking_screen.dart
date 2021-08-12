@@ -294,7 +294,7 @@ class _BookingScreenState extends State<BookingScreen> {
       if (ModalRoute.of(context).settings.arguments != null) {
         dynamic receivedData = ModalRoute.of(context).settings.arguments;
         String entity = entityToString(receivedData.entity);
-        String entityId = receivedData.entityId;
+        String entityId = receivedData.clinicId;
         String detailId = receivedData.cardDetail.id.toString();
         schedulesResponse =
             EntityAPI.getEntitySchedules(entity, entityId, detailId);

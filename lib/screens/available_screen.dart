@@ -14,7 +14,7 @@ import '../widgets/background_image.dart';
 import '../widgets/clinic_card.dart';
 import '../widgets/input_field.dart';
 import '../widgets/modal_sheet_list_tile.dart';
-import '../widgets/sor_card.dart';
+import '../widgets/service_card.dart';
 
 class AvailableScreen extends StatefulWidget {
   static const routeName = '/available';
@@ -26,6 +26,8 @@ class AvailableScreen extends StatefulWidget {
 class _AvailableScreenState extends State<AvailableScreen> {
   // LatLng _location;
   String _response = '';
+  List<Detail> _details = [];
+  List _cards = [];
   AppData _appData;
 
   List<City> _cities;
@@ -38,19 +40,18 @@ class _AvailableScreenState extends State<AvailableScreen> {
   ClinicCardData clinicData;
   List<ClinicDetail> clinicDataFiltered = [];
   SORCardData sorData;
-  List<SORDetail> sorDataFiltered = [];
+  List<ServiceDetail> sorDataFiltered = [];
 
   //search results
   List<ClinicCard> clinicCardsListSearched = [];
-  List<SORCard> sorCardsListSearched = [];
+  List<ServiceCard> sorCardsListSearched = [];
 
   //filter results
   //rendered
   List<ClinicCard> clinicCardsListFiltered = [];
-  List<SORCard> sorCardsListFiltered = [];
+  List<ServiceCard> sorCardsListFiltered = [];
 
-  List<ClinicCard> clinicCardsList = [];
-  List<SORCard> sorCardsList = [];
+  List<ServiceCard> sorCardsList = [];
 
   City cityDDV;
   Area areaDDV;
@@ -65,6 +66,18 @@ class _AvailableScreenState extends State<AvailableScreen> {
     Future.delayed(Duration.zero, () async {
       final entity = ModalRoute.of(context).settings.arguments;
       _response = await EntityAPI.getEntityDetails(context, entity);
+      final list = json.decode(_response)['details'];
+      if (entity is Clinic) {
+        list.forEach((json) => _details.add(ClinicDetail.fromJson(json)));
+        _cards = _details.map((detail) {
+          return ClinicCard(detail: detail, clinicId: entity.id);
+        }).toList();
+      } else if (entity is Service) {
+        list.forEach((json) => _details.add(ServiceDetail.fromJson(json)));
+        _cards = _details.map((detail) {
+          return ServiceCard(detail: detail, serviceId: entity.id);
+        }).toList();
+      }
       setState(() {});
 
       _appData = Provider.of<AppData>(context, listen: false);
@@ -90,6 +103,21 @@ class _AvailableScreenState extends State<AvailableScreen> {
       await EntityAPI.getAreas(context);
       _areas = _appData.getAreas(context);
     }
+  }
+
+  Widget _noDetails(ThemeData theme, EntityClass entity) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset('assets/images/doctor_sad.png', height: 400),
+        const SizedBox(height: 20),
+        Text(
+          t('no_details'),
+          style: theme.textTheme.headline6.copyWith(color: theme.accentColor),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
   }
 
   void onSortClick(BuildContext context, ThemeData theme) {
@@ -156,12 +184,12 @@ class _AvailableScreenState extends State<AvailableScreen> {
   List<ClinicCard> clinicListSorter(
       BuildContext context, List<ClinicCard> entityDetailsList) {
     if (Provider.of<AppData>(context).sortingVars[0] == true) {
-      entityDetailsList.sort(
-          (a, b) => a.clinicCardData.price.compareTo(b.clinicCardData.price));
+      entityDetailsList
+          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
       return entityDetailsList;
     } else if (Provider.of<AppData>(context).sortingVars[1] == true) {
-      entityDetailsList.sort(
-          (a, b) => a.clinicCardData.price.compareTo(b.clinicCardData.price));
+      entityDetailsList
+          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
       return entityDetailsList.reversed.toList();
     }
     // else if (Provider.of<AppData>(context).sortingVars[2] == true) {
@@ -183,15 +211,15 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
   }
 
-  List<SORCard> sorListSorter(
-      BuildContext context, List<SORCard> entityDetailsList) {
+  List<ServiceCard> sorListSorter(
+      BuildContext context, List<ServiceCard> entityDetailsList) {
     if (Provider.of<AppData>(context).sortingVars[0] == true) {
       entityDetailsList
-          .sort((a, b) => a.sorCardData.price.compareTo(b.sorCardData.price));
+          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
       return entityDetailsList;
     } else if (Provider.of<AppData>(context).sortingVars[1] == true) {
       entityDetailsList
-          .sort((a, b) => a.sorCardData.price.compareTo(b.sorCardData.price));
+          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
       return entityDetailsList.reversed.toList();
     }
     // else if (Provider.of<AppData>(context).sortingVars[2] == true) {
@@ -211,53 +239,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
     else {
       return entityDetailsList;
     }
-  }
-
-  noEntityDetails(ThemeData theme, EntityClass entity) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          "assets/images/doctor_sad.png",
-          height: 400,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    t("Unfortunately, No"),
-                    style: theme.textTheme.headline6
-                        .copyWith(color: theme.accentColor),
-                  ),
-                  Text(
-                    "${getEntityTranslated(entityToString(entity is Clinic ? Entity.clinic : Entity.service))}",
-                    style: theme.textTheme.headline6
-                        .copyWith(color: theme.accentColor),
-                  ),
-                ],
-              ),
-              Text(
-                t("are available in this section for now. Please check again later!"),
-                style: theme.textTheme.headline6
-                    .copyWith(color: theme.accentColor),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  String getEntityTranslated(String entity) {
-    if (entity == "services") {
-      return t("available_services");
-    }
-    return t("available_clinics");
   }
 
   Future<void> getHospitals(BuildContext context) async {
@@ -389,6 +370,37 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
   }
 
+  onSearchTextChanged(String text) async {
+    sorCardsListSearched.clear();
+    clinicCardsListSearched.clear();
+    text = removeWhitespace(text.toLowerCase());
+    if (text.isEmpty) {
+      setState(() {});
+      return;
+    }
+    final entity = ModalRoute.of(context).settings.arguments;
+    if (entity is Clinic) {
+      clinicCardsListFiltered.forEach((clinicCard) {
+        if (removeWhitespace(clinicCard.detail.price.toString())
+                .contains(text) ||
+            removeWhitespace(clinicCard.detail.doctor.name.toLowerCase())
+                .contains(text) ||
+            removeWhitespace(clinicCard.detail.doctor.title.toLowerCase())
+                .contains(text)) {
+          clinicCardsListSearched.add(clinicCard);
+        }
+      });
+      setState(() {});
+    } else {
+      sorCardsListFiltered.forEach((sorCard) {
+        if (removeWhitespace(sorCard.detail.price.toString()).contains(text)) {
+          sorCardsListSearched.add(sorCard);
+        }
+      });
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final appData = Provider.of<AppData>(context);
@@ -399,39 +411,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
     final entity2 = ModalRoute.of(context).settings.arguments as EntityClass;
     setAppLocalization(context);
 
-    onSearchTextChanged(String text) async {
-      sorCardsListSearched.clear();
-      clinicCardsListSearched.clear();
-      text = removeWhitespace(text.toLowerCase());
-      if (text.isEmpty) {
-        setState(() {});
-        return;
-      }
-      if (entity2 is Clinic) {
-        clinicCardsListFiltered.forEach((clinicCard) {
-          if (removeWhitespace(clinicCard.clinicCardData.price.toString())
-                  .contains(text) ||
-              removeWhitespace(
-                      clinicCard.clinicCardData.doctor.name.toLowerCase())
-                  .contains(text) ||
-              removeWhitespace(
-                      clinicCard.clinicCardData.doctor.title.toLowerCase())
-                  .contains(text)) {
-            clinicCardsListSearched.add(clinicCard);
-          }
-        });
-        setState(() {});
-      } else {
-        sorCardsListFiltered.forEach((sorCard) {
-          if (removeWhitespace(sorCard.sorCardData.price.toString())
-              .contains(text)) {
-            sorCardsListSearched.add(sorCard);
-          }
-        });
-        setState(() {});
-      }
-    }
-
     if (_response.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text(entity2.name)),
@@ -439,62 +418,37 @@ class _AvailableScreenState extends State<AvailableScreen> {
       );
     }
 
+    if (_details.length == 0) {
+      return Scaffold(
+        appBar: AppBar(title: Text(entity2.name)),
+        body: _noDetails(theme, entity2),
+      );
+    }
+
     if (entity2 is Clinic) {
-      clinicData = ClinicCardData.fromJson(json.decode(_response));
-      if (clinicData.details.length == 0) {
-        return Scaffold(
-          appBar: AppBar(title: Text(entity2.name)),
-          body: noEntityDetails(theme, entity2),
-        );
-      }
-      clinicCardsList =
-          clinicData.details.asMap().entries.map<ClinicCard>((detail) {
-        return ClinicCard(
-          entityId: entity2.id,
-          entity: Entity.clinic,
-          clinicCardData: clinicData.details[detail.key],
-        );
-      }).toList();
+      // print(_response);
       if (filterClicked) {
         clinicCardsListFiltered =
             clinicDataFiltered.asMap().entries.map<ClinicCard>((detail) {
           return ClinicCard(
-            entityId: entity2.id,
-            entity: Entity.clinic,
-            clinicCardData: clinicDataFiltered[detail.key],
+            clinicId: entity2.id,
+            detail: clinicDataFiltered[detail.key],
           );
         }).toList();
       } else {
-        clinicCardsListFiltered = clinicCardsList;
+        clinicCardsListFiltered = _cards;
       }
     } else {
-      sorData = SORCardData.fromJson(json.decode(_response));
-      if (sorData.details.length == 0) {
-        return Scaffold(
-            resizeToAvoidBottomPadding: false,
-            appBar: AppBar(
-              title: Text(entity2.name),
-            ),
-            body: noEntityDetails(theme, entity2));
-      }
-      sorCardsList = sorData.details.asMap().entries.map<SORCard>((detail) {
-        return SORCard(
-          entityId: entity2.id,
-          entity: Entity.service,
-          sorCardData: sorData.details[detail.key],
-        );
-      }).toList();
       if (filterClicked) {
         sorCardsListFiltered =
-            sorDataFiltered.asMap().entries.map<SORCard>((detail) {
-          return SORCard(
-            entityId: entity2.id,
-            entity: Entity.service,
-            sorCardData: sorDataFiltered[detail.key],
+            sorDataFiltered.asMap().entries.map<ServiceCard>((detail) {
+          return ServiceCard(
+            serviceId: entity2.id,
+            detail: sorDataFiltered[detail.key],
           );
         }).toList();
       } else {
-        sorCardsListFiltered = sorCardsList;
+        sorCardsListFiltered = _cards;
       }
     }
     return Scaffold(
