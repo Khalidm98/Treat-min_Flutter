@@ -93,8 +93,7 @@ class ClinicCard extends StatelessWidget {
                               .copyWith(color: theme.primaryColor),
                         ),
                         RatingHearts(
-                          iconHeight: 15,
-                          iconWidth: 15,
+                          size: 15,
                           rating: detail.ratingUsers != 0
                               ? (detail.ratingTotal ~/ detail.ratingUsers)
                               : 0,

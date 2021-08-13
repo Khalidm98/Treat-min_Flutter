@@ -377,8 +377,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             ),
                       const SizedBox(height: 10),
                       RatingHearts(
-                        iconHeight: 25,
-                        iconWidth: 25,
+                        size: 25,
                         rating: receivedData.cardDetail.ratingUsers != 0
                             ? (receivedData.cardDetail.ratingTotal ~/
                                 receivedData.cardDetail.ratingUsers)

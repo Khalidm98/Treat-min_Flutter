@@ -8,7 +8,7 @@ class SocialButton extends StatelessWidget {
   final AuthMode mode;
   final Social social;
 
-  SocialButton(this.mode, this.social);
+  const SocialButton(this.mode, this.social);
 
   @override
   Widget build(BuildContext context) {

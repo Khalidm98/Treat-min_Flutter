@@ -63,10 +63,7 @@ class ReviewBox extends StatelessWidget {
                           .copyWith(color: Colors.grey),
                       textScaleFactor: 0.7,
                     ),
-                    RatingHearts(
-                        rating: int.parse(review.rating),
-                        iconWidth: 10,
-                        iconHeight: 10),
+                    RatingHearts(rating: int.parse(review.rating), size: 10),
                   ],
                 ),
               ),
