@@ -120,6 +120,7 @@
   "sort": "Sort",
   "filter": "Filter",
   "close_filter": "Close filter",
+  "reset": "Reset",
   "sort_by": "Sort By",
   "search_clinic": "Doctor name or price...",
   "search_service": "Price...",

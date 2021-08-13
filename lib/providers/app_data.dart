@@ -15,26 +15,12 @@ class AppData with ChangeNotifier {
   static const maxClinicID = 29;
   List<Clinic> clinics = [];
   List<Service> services = [];
+
   List<City> cities = [];
   List<Area> areas = [];
   List<FiltrationHospital> hospitals = [];
 
-  List<Area> updatedAreas = [];
-  List<FiltrationHospital> updatedHospitals = [];
   List<bool> sortingVars = [false, false];
-
-  String entityTranslation(String multilingualString, String langCode) {
-    int dashIndex = multilingualString.indexOf("-");
-    if (dashIndex == -1) {
-      return multilingualString;
-    } else {
-      if (langCode == 'ar') {
-        return multilingualString.substring(dashIndex + 2);
-      } else {
-        return multilingualString.substring(0, dashIndex);
-      }
-    }
-  }
 
   Future<void> setLanguage(BuildContext context, String languageCode) async {
     final prefs = await SharedPreferences.getInstance();
@@ -88,7 +74,6 @@ class AppData with ChangeNotifier {
 
   void setHospitals(List<FiltrationHospital> list) {
     hospitals = list;
-    updatedHospitals = list;
     notifyListeners();
   }
 
@@ -130,14 +115,33 @@ class AppData with ChangeNotifier {
     return list;
   }
 
-  List getCities(BuildContext context) {
+  List<City> getCities(BuildContext context) {
     final list = cities.map((entity) => entity).toList();
     return translate(context, list);
   }
 
-  List getAreas(BuildContext context) {
+  List<Area> getAreas(BuildContext context) {
     final list = areas.map((entity) => entity).toList();
     return translate(context, list);
+  }
+
+  List<FiltrationHospital> getHospitals(BuildContext context) {
+    List<FiltrationHospital> list = [];
+    list = hospitals;
+    //  final langCode = Localizations.localeOf(context).languageCode;
+    return list;
+  }
+
+  List<Area> getCityAreas(int cityId) {
+    return areas.where((area) => area.city == cityId).toList();
+  }
+
+  List<FiltrationHospital> getCityHospitals(int cityId) {
+    return hospitals.where((hospital) => hospital.city == cityId).toList();
+  }
+
+  List<FiltrationHospital> getAreaHospitals(int areaId) {
+    return hospitals.where((hospital) => hospital.area == areaId).toList();
   }
 
   void changeSortPriceLowHigh() {
@@ -156,52 +160,5 @@ class AppData with ChangeNotifier {
       // sortingVars[2] = false;
     }
     notifyListeners();
-  }
-
-  List getUpdatedAreas(BuildContext context) {
-    List<Area> list = [];
-    list = updatedAreas;
-    //  final langCode = Localizations.localeOf(context).languageCode;
-    return list;
-  }
-
-  List getUpdatedHospitals(BuildContext context) {
-    List<FiltrationHospital> list = [];
-    list = updatedHospitals;
-    //  final langCode = Localizations.localeOf(context).languageCode;
-    return list;
-  }
-
-  List getHospitals(BuildContext context) {
-    List<FiltrationHospital> list = [];
-    list = hospitals;
-    //  final langCode = Localizations.localeOf(context).languageCode;
-    return list;
-  }
-
-  List<Area> updateAreas(City city) {
-    updatedAreas = areas.where((element) => element.city == city.id).toList();
-
-    notifyListeners();
-
-    return updatedAreas;
-  }
-
-  List<FiltrationHospital> updateHospitals(City city, Area area) {
-    if (area == null) {
-      updatedHospitals =
-          hospitals.where((element) => element.city == city.id).toList();
-      notifyListeners();
-
-      return updatedHospitals;
-    } else {
-      updatedHospitals = hospitals
-          .where(
-              (element) => element.city == city.id && element.area == area.id)
-          .toList();
-      notifyListeners();
-
-      return updatedHospitals;
-    }
   }
 }

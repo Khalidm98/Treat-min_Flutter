@@ -9,7 +9,6 @@ import '../models/card_data.dart';
 import '../models/filtration.dart';
 import '../models/entity.dart';
 import '../providers/app_data.dart';
-import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
 import '../widgets/clinic_card.dart';
 import '../widgets/input_field.dart';
@@ -25,37 +24,22 @@ class AvailableScreen extends StatefulWidget {
 
 class _AvailableScreenState extends State<AvailableScreen> {
   // LatLng _location;
-  List<Detail> _details;
+  List _details;
+  List _filterList = [];
+  List _searchList = [];
   List _cards = [];
 
   List<City> _cities;
   List<Area> _areas;
   List<FiltrationHospital> _hospitals;
 
-  bool filterClicked = false;
-  bool _searchOn = false;
+  City _city;
+  Area _area;
+  FiltrationHospital _hospital;
 
-  //entities+detail lists
-  ClinicCardData clinicData;
-  List<ClinicDetail> clinicDataFiltered = [];
-  SORCardData sorData;
-  List<ServiceDetail> sorDataFiltered = [];
-
-  //search results
-  List<ClinicCard> clinicCardsListSearched = [];
-  List<ServiceCard> sorCardsListSearched = [];
-
-  //filter results
-  //rendered
-  List<ClinicCard> clinicCardsListFiltered = [];
-  List<ServiceCard> sorCardsListFiltered = [];
-
-  List<ServiceCard> sorCardsList = [];
-
-  City cityDDV;
-  Area areaDDV;
-  FiltrationHospital hospitalDDV;
+  bool _filterSelected = false;
   bool _filterOn = false;
+  bool _searchOn = false;
   final _controller = TextEditingController();
 
   @override
@@ -77,8 +61,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
           return ServiceCard(detail: detail, serviceId: entity.id);
         }).toList();
       }
+      await _prepareFilters();
       setState(() {});
-      _prepareFilters();
     });
   }
 
@@ -110,19 +94,60 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
   }
 
-  Widget _noDetails(ThemeData theme, EntityClass entity) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset('assets/images/doctor_sad.png', height: 400),
-        const SizedBox(height: 20),
-        Text(
-          t('no_details'),
-          style: theme.textTheme.headline6.copyWith(color: theme.accentColor),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
+  void _filter() {
+    _filterList.clear();
+
+    if (_hospital != null) {
+      _filterList = _details.where((detail) {
+        return detail.hospital.name.contains(_hospital.name);
+      }).toList();
+    } else if (_area != null) {
+      _filterList = _details.where((detail) {
+        return detail.hospital.area.contains(_area.name);
+      }).toList();
+    } else if (_city != null) {
+      _filterList = _details.where((detail) {
+        return detail.hospital.city.contains(_city.name);
+      }).toList();
+    } else {
+      return;
+    }
+    setState(() {
+      _filterSelected = true;
+    });
+  }
+
+  String _removeWhitespace(String text) {
+    return text.replaceAll(' ', '').toLowerCase();
+  }
+
+  void _search(String keyword) {
+    _searchList.clear();
+    keyword = _removeWhitespace(keyword);
+    if (keyword.isEmpty) {
+      setState(() {
+        _searchList = _details.map((detail) => detail).toList();
+      });
+      return;
+    }
+
+    final entity = ModalRoute.of(context).settings.arguments;
+    if (entity is Clinic) {
+      _details.forEach((detail) {
+        if (_removeWhitespace(detail.doctor.name).contains(keyword) ||
+            _removeWhitespace(detail.doctor.title).contains(keyword) ||
+            detail.price.toString().contains(keyword)) {
+          _searchList.add(detail);
+        }
+      });
+    } else {
+      _details.forEach((detail) {
+        if (detail.price.toString().contains(keyword)) {
+          _searchList.add(detail);
+        }
+      });
+    }
+    setState(() {});
   }
 
   void onSortClick(BuildContext context, ThemeData theme) {
@@ -179,11 +204,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
         );
       },
     );
-  }
-
-  String removeWhitespace(String text) {
-    String newText = text.replaceAll(" ", "");
-    return newText;
   }
 
   List<ClinicCard> clinicListSorter(
@@ -246,166 +266,10 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
   }
 
-  List filterCards(
-      City city, Area area, FiltrationHospital hospital, Entity entity) {
-    List filteredClinics = [];
-    List filteredSOR = [];
-    if (city != null && area == null && hospital == null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) => element.hospital.city.contains(city.name))
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) => element.hospital.city.contains(city.name))
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (city != null && area != null && hospital == null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) =>
-                element.hospital.city.contains(city.name) &&
-                element.hospital.area.contains(area.name))
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) =>
-                element.hospital.city.contains(city.name) &&
-                element.hospital.area.contains(area.name))
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (city != null && area != null && hospital != null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) =>
-                element.hospital.city.contains(city.name) &&
-                element.hospital.area.contains(area.name) &&
-                element.hospital.name == hospital.name)
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) =>
-                element.hospital.city.contains(city.name) &&
-                element.hospital.area.contains(area.name) &&
-                element.hospital.name == hospital.name)
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (city == null && area == null && hospital != null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) => element.hospital.name == hospital.name)
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) => element.hospital.name == hospital.name)
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (city != null && area == null && hospital != null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) =>
-                element.hospital.city.contains(city.name) &&
-                element.hospital.name == hospital.name)
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) =>
-                element.hospital.city.contains(city.name) &&
-                element.hospital.name == hospital.name)
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (city == null && area != null && hospital != null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) =>
-                element.hospital.area.contains(area.name) &&
-                element.hospital.name == hospital.name)
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) =>
-                element.hospital.area.contains(area.name) &&
-                element.hospital.name == hospital.name)
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (city == null && area != null && hospital == null) {
-      if (entity == Entity.clinic) {
-        filteredClinics = clinicData.details
-            .where((element) => element.hospital.area.contains(area.name))
-            .toList();
-        return filteredClinics;
-      } else {
-        List filteredSOR = sorData.details
-            .where((element) => element.hospital.area.contains(area.name))
-            .toList();
-        return filteredSOR;
-      }
-    }
-    if (entity == Entity.clinic) {
-      filteredClinics = clinicData.details;
-      return filteredClinics;
-    } else {
-      filteredSOR = sorData.details;
-      return filteredSOR;
-    }
-  }
-
-  onSearchTextChanged(String text) async {
-    sorCardsListSearched.clear();
-    clinicCardsListSearched.clear();
-    text = removeWhitespace(text.toLowerCase());
-    if (text.isEmpty) {
-      setState(() {});
-      return;
-    }
-    final entity = ModalRoute.of(context).settings.arguments;
-    if (entity is Clinic) {
-      clinicCardsListFiltered.forEach((clinicCard) {
-        if (removeWhitespace(clinicCard.detail.price.toString())
-                .contains(text) ||
-            removeWhitespace(clinicCard.detail.doctor.name.toLowerCase())
-                .contains(text) ||
-            removeWhitespace(clinicCard.detail.doctor.title.toLowerCase())
-                .contains(text)) {
-          clinicCardsListSearched.add(clinicCard);
-        }
-      });
-      setState(() {});
-    } else {
-      sorCardsListFiltered.forEach((sorCard) {
-        if (removeWhitespace(sorCard.detail.price.toString()).contains(text)) {
-          sorCardsListSearched.add(sorCard);
-        }
-      });
-      setState(() {});
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final appData = Provider.of<AppData>(context);
-    final List<Area> updatedAreasList = appData.getUpdatedAreas(context);
-    final List<FiltrationHospital> updatedHospitalsList =
-        appData.getUpdatedHospitals(context);
     final theme = Theme.of(context);
+    final appData = Provider.of<AppData>(context);
     final entity = ModalRoute.of(context).settings.arguments as EntityClass;
     setAppLocalization(context);
 
@@ -419,34 +283,43 @@ class _AvailableScreenState extends State<AvailableScreen> {
     if (_details.length == 0) {
       return Scaffold(
         appBar: AppBar(title: Text(entity.name)),
-        body: _noDetails(theme, entity),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/doctor_sad.png', height: 400),
+            const SizedBox(height: 20),
+            Text(
+              t('no_details'),
+              style:
+                  theme.textTheme.headline6.copyWith(color: theme.accentColor),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       );
     }
 
-    if (entity is Clinic) {
-      if (filterClicked) {
-        clinicCardsListFiltered =
-            clinicDataFiltered.asMap().entries.map<ClinicCard>((detail) {
-          return ClinicCard(
-            clinicId: entity.id,
-            detail: clinicDataFiltered[detail.key],
-          );
-        }).toList();
-      } else {
-        clinicCardsListFiltered = _cards;
-      }
+    List list = [];
+    if (_filterSelected && _controller.text.isNotEmpty) {
+      list = _filterList.where((detail) {
+        return _searchList.contains(detail);
+      }).toList();
+    } else if (_filterSelected) {
+      list = _filterList;
+    } else if (_controller.text.isNotEmpty) {
+      list = _searchList;
     } else {
-      if (filterClicked) {
-        sorCardsListFiltered =
-            sorDataFiltered.asMap().entries.map<ServiceCard>((detail) {
-          return ServiceCard(
-            serviceId: entity.id,
-            detail: sorDataFiltered[detail.key],
-          );
-        }).toList();
-      } else {
-        sorCardsListFiltered = _cards;
-      }
+      list = _details;
+    }
+
+    if (entity is Clinic) {
+      _cards = list.map((detail) {
+        return ClinicCard(detail: detail, clinicId: entity.id);
+      }).toList();
+    } else {
+      _cards = list.map((detail) {
+        return ServiceCard(detail: detail, serviceId: entity.id);
+      }).toList();
     }
 
     return Scaffold(
@@ -473,9 +346,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         ),
                         onPressed: () {
                           setState(() {
-                            cityDDV = null;
-                            areaDDV = null;
-                            hospitalDDV = null;
                             _filterOn = !_filterOn;
                           });
                         },
@@ -565,19 +435,20 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                 dropdownColor: theme.primaryColor,
                                 iconEnabledColor: Colors.white,
                                 //isExpanded: true,
-                                value: cityDDV,
+                                value: _city,
                                 hint: Text(
                                   t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 onChanged: (newValue) {
                                   setState(() {
-                                    cityDDV = newValue;
+                                    _city = newValue;
+                                    _area = null;
+                                    _hospital = null;
+                                    _areas = appData.getCityAreas(_city.id);
+                                    _hospitals =
+                                        appData.getCityHospitals(_city.id);
                                   });
-                                  areaDDV = null;
-                                  hospitalDDV = null;
-                                  appData.updateAreas(cityDDV);
-                                  appData.updateHospitals(cityDDV, areaDDV);
                                 },
                                 items: _cities.map((City city) {
                                   return DropdownMenuItem(
@@ -610,21 +481,20 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                 dropdownColor: theme.primaryColor,
                                 iconEnabledColor: Colors.white,
                                 //isExpanded: true,
-                                value: areaDDV,
+                                value: _area,
                                 hint: Text(
-                                  updatedAreasList.length == 0
-                                      ? t('none')
-                                      : t('all'),
+                                  _areas.length == 0 ? t('none') : t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 onChanged: (newValue) {
                                   setState(() {
-                                    areaDDV = newValue;
+                                    _area = newValue;
+                                    _hospital = null;
+                                    _hospitals =
+                                        appData.getAreaHospitals(_area.id);
                                   });
-                                  hospitalDDV = null;
-                                  appData.updateHospitals(cityDDV, areaDDV);
                                 },
-                                items: updatedAreasList.map((Area area) {
+                                items: _areas.map((Area area) {
                                   return DropdownMenuItem(
                                     value: area,
                                     child: Text(
@@ -655,19 +525,17 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                 dropdownColor: theme.primaryColor,
                                 iconEnabledColor: Colors.white,
                                 // isExpanded: true,
-                                value: hospitalDDV,
+                                value: _hospital,
                                 hint: Text(
-                                  updatedHospitalsList.length == 0
-                                      ? t('none')
-                                      : t('all'),
+                                  _hospitals.length == 0 ? t('none') : t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 onChanged: (newValue) {
                                   setState(() {
-                                    hospitalDDV = newValue;
+                                    _hospital = newValue;
                                   });
                                 },
-                                items: updatedHospitalsList
+                                items: _hospitals
                                     .map((FiltrationHospital hospital) {
                                   return DropdownMenuItem(
                                     value: hospital,
@@ -683,36 +551,41 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                            theme.primaryColor,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                theme.errorColor,
+                              ),
+                              minimumSize: MaterialStateProperty.all<Size>(
+                                const Size(120, 40),
+                              ),
+                            ),
+                            child: Text(t('reset'), textScaleFactor: 0.8),
+                            onPressed: () {
+                              setState(() {
+                                _city = _area = _hospital = null;
+                                _areas = appData.getAreas(context);
+                                _hospitals = appData.getHospitals(context);
+                                _filterSelected = false;
+                              });
+                            },
                           ),
-                          minimumSize: MaterialStateProperty.all<Size>(
-                            const Size(120, 40),
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                theme.primaryColor,
+                              ),
+                              minimumSize: MaterialStateProperty.all<Size>(
+                                const Size(120, 40),
+                              ),
+                            ),
+                            child: Text(t('filter'), textScaleFactor: 0.8),
+                            onPressed: _filter,
                           ),
-                        ),
-                        child: Text(t('filter'), textScaleFactor: 0.8),
-                        onPressed: () {
-                          setState(() {
-                            if (entity is Clinic) {
-                              sorCardsListSearched.clear();
-                              clinicCardsListSearched.clear();
-                              clinicDataFiltered = filterCards(
-                                  cityDDV, areaDDV, hospitalDDV, Entity.clinic);
-                            } else {
-                              sorCardsListSearched.clear();
-                              clinicCardsListSearched.clear();
-                              sorDataFiltered = filterCards(
-                                cityDDV,
-                                areaDDV,
-                                hospitalDDV,
-                                Entity.clinic,
-                              );
-                            }
-                            filterClicked = true;
-                          });
-                        },
+                        ],
                       ),
                     ],
                   ),
@@ -724,6 +597,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                   child: Theme(
                     data: inputTheme(context),
                     child: TextField(
+                      onChanged: _search,
                       controller: _controller,
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.search),
@@ -734,11 +608,10 @@ class _AvailableScreenState extends State<AvailableScreen> {
                           icon: const Icon(Icons.cancel),
                           onPressed: () {
                             _controller.clear();
-                            onSearchTextChanged('');
+                            _search('');
                           },
                         ),
                       ),
-                      onChanged: onSearchTextChanged,
                     ),
                   ),
                 ),
@@ -765,57 +638,5 @@ class _AvailableScreenState extends State<AvailableScreen> {
         ),
       ),
     );
-
-    // return Scaffold(
-    //   body: Expanded(
-    //     child: (clinicCardsListSearched.length == 0 &&
-    //                 entity is Clinic &&
-    //                 _controller.text.isNotEmpty) ||
-    //             (sorCardsListSearched.length == 0 &&
-    //                 entity is Service &&
-    //                 _controller.text.isNotEmpty)
-    //         ? Center(
-    //             child: Text(
-    //             t('no_search_results'),
-    //             style: theme.textTheme.headline6,
-    //           ))
-    //         : clinicCardsListSearched.length != 0 ||
-    //                 sorCardsListSearched.length != 0 ||
-    //                 _controller.text.isNotEmpty
-    //             ? ListView.builder(
-    //                 itemCount: entity is Clinic
-    //                     ? clinicCardsListSearched.length
-    //                     : sorCardsListSearched.length,
-    //                 itemBuilder: (context, index) {
-    //                   return entity is Clinic
-    //                       ? clinicListSorter(
-    //                           context, clinicCardsListSearched)[index]
-    //                       : sorListSorter(
-    //                           context, sorCardsListSearched)[index];
-    //                 },
-    //               )
-    //             : (clinicCardsListFiltered.length == 0 &&
-    //                         entity is Clinic) ||
-    //                     (sorCardsListFiltered.length == 0 &&
-    //                         entity is Service)
-    //                 ? Center(
-    //                     child: Text(
-    //                     t('no_results'),
-    //                     style: theme.textTheme.headline6,
-    //                   ))
-    //                 : ListView.builder(
-    //                     itemCount: entity is Clinic
-    //                         ? clinicCardsListFiltered.length
-    //                         : sorCardsListFiltered.length,
-    //                     itemBuilder: (context, index) {
-    //                       return entity is Clinic
-    //                           ? clinicListSorter(
-    //                               context, clinicCardsListFiltered)[index]
-    //                           : sorListSorter(
-    //                               context, sorCardsListFiltered)[index];
-    //                     },
-    //                   ),
-    //   ),
-    // );
   }
 }
