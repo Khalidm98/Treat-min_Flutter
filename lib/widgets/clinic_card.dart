@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'rating_hearts.dart';
 import '../localizations/app_localizations.dart';
-import '../models/card_data.dart';
+import '../models/entity_details.dart';
 import '../models/entity.dart';
 import '../screens/booking_screen.dart';
 

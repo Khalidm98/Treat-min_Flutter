@@ -5,8 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
-import '../models/card_data.dart';
-import '../models/filtration.dart';
+import '../models/entity_details.dart';
 import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../widgets/background_image.dart';
@@ -31,11 +30,11 @@ class _AvailableScreenState extends State<AvailableScreen> {
 
   List<City> _cities;
   List<Area> _areas;
-  List<FiltrationHospital> _hospitals;
+  List<Hospital> _hospitals;
 
   City _city;
   Area _area;
-  FiltrationHospital _hospital;
+  Hospital _hospital;
 
   bool _filterSelected = false;
   bool _filterOn = false;
@@ -103,11 +102,11 @@ class _AvailableScreenState extends State<AvailableScreen> {
       }).toList();
     } else if (_area != null) {
       _filterList = _details.where((detail) {
-        return detail.hospital.area.contains(_area.name);
+        return detail.hospital.area == _area.id;
       }).toList();
     } else if (_city != null) {
       _filterList = _details.where((detail) {
-        return detail.hospital.city.contains(_city.name);
+        return detail.hospital.city == _city.id;
       }).toList();
     } else {
       return;
@@ -270,7 +269,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final appData = Provider.of<AppData>(context);
-    final entity = ModalRoute.of(context).settings.arguments as EntityClass;
+    final entity = ModalRoute.of(context).settings.arguments as NamedEntity;
     setAppLocalization(context);
 
     if (_details == null) {
@@ -535,8 +534,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                     _hospital = newValue;
                                   });
                                 },
-                                items: _hospitals
-                                    .map((FiltrationHospital hospital) {
+                                items: _hospitals.map((Hospital hospital) {
                                   return DropdownMenuItem(
                                     value: hospital,
                                     child: Text(

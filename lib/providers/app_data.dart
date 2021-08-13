@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/card_data.dart';
-import '../models/filtration.dart';
 import '../models/entity.dart';
 import '../utils/enumerations.dart';
 import '../main.dart';
@@ -18,7 +16,7 @@ class AppData with ChangeNotifier {
 
   List<City> cities = [];
   List<Area> areas = [];
-  List<FiltrationHospital> hospitals = [];
+  List<Hospital> hospitals = [];
 
   List<bool> sortingVars = [false, false];
 
@@ -72,8 +70,8 @@ class AppData with ChangeNotifier {
     notifyListeners();
   }
 
-  void setHospitals(List<FiltrationHospital> list) {
-    hospitals = list;
+  void setHospitals(List list) {
+    list.forEach((json) => hospitals.add(Hospital.asFilter(json)));
     notifyListeners();
   }
 
@@ -125,22 +123,20 @@ class AppData with ChangeNotifier {
     return translate(context, list);
   }
 
-  List<FiltrationHospital> getHospitals(BuildContext context) {
-    List<FiltrationHospital> list = [];
-    list = hospitals;
-    //  final langCode = Localizations.localeOf(context).languageCode;
-    return list;
+  List<Hospital> getHospitals(BuildContext context) {
+    final list = hospitals.map((entity) => entity).toList();
+    return translate(context, list);
   }
 
   List<Area> getCityAreas(int cityId) {
     return areas.where((area) => area.city == cityId).toList();
   }
 
-  List<FiltrationHospital> getCityHospitals(int cityId) {
+  List<Hospital> getCityHospitals(int cityId) {
     return hospitals.where((hospital) => hospital.city == cityId).toList();
   }
 
-  List<FiltrationHospital> getAreaHospitals(int areaId) {
+  List<Hospital> getAreaHospitals(int areaId) {
     return hospitals.where((hospital) => hospital.area == areaId).toList();
   }
 

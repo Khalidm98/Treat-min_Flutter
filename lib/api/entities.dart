@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../models/card_data.dart';
 import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../utils/dialogs.dart';
@@ -38,8 +37,7 @@ class EntityAPI {
     final response = await http.get('$_baseURL/hospitals/');
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setHospitals(
-        Hospitals.fromJson(json.decode(utf8.decode(response.bodyBytes)))
-            .hospitals,
+        json.decode(utf8.decode(response.bodyBytes))['hospitals'],
       );
     } else {
       somethingWentWrong(context);
@@ -69,7 +67,7 @@ class EntityAPI {
   }
 
   static Future<String> getEntityDetails(
-      BuildContext context, EntityClass entity) async {
+      BuildContext context, NamedEntity entity) async {
     final response = await http.get(
       '$_baseURL/${entity.toString()}/details/',
     );
