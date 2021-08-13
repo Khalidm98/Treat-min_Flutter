@@ -125,7 +125,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
     keyword = _removeWhitespace(keyword);
     if (keyword.isEmpty) {
       setState(() {
-        _searchList = _details.map((detail) => detail).toList();
+        _controller.clear();
       });
       return;
     }
@@ -386,10 +386,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                     Expanded(
                       child: ElevatedButton(
                         child: FittedBox(
-                          child: Text(
-                            t('sort'),
-                            textScaleFactor: 0.8,
-                          ),
+                          child: Text(t('sort'), textScaleFactor: 0.8),
                         ),
                         onPressed: () {
                           onSortClick(context, theme);
@@ -444,7 +441,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                     _city = newValue;
                                     _area = null;
                                     _hospital = null;
-                                    _areas = appData.getCityAreas(_city.id);
+                                    _areas =
+                                        appData.getCityAreas(context, _city.id);
                                     _hospitals =
                                         appData.getCityHospitals(_city.id);
                                   });

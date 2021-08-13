@@ -100,10 +100,10 @@ class AppData with ChangeNotifier {
     List list = [];
     switch (entity) {
       case Entity.clinic:
-        list = clinics.map((entity) => entity).toList();
+        list = clinics.map((entity) => entity.clone()).toList();
         break;
       case Entity.service:
-        list = services.map((entity) => entity).toList();
+        list = services.map((entity) => entity.clone()).toList();
         break;
     }
 
@@ -114,22 +114,23 @@ class AppData with ChangeNotifier {
   }
 
   List<City> getCities(BuildContext context) {
-    final list = cities.map((entity) => entity).toList();
+    final list = cities.map((entity) => entity.clone()).toList();
     return translate(context, list);
   }
 
   List<Area> getAreas(BuildContext context) {
-    final list = areas.map((entity) => entity).toList();
+    final list = areas.map((entity) => entity.clone()).toList();
     return translate(context, list);
   }
 
   List<Hospital> getHospitals(BuildContext context) {
-    final list = hospitals.map((entity) => entity).toList();
-    return translate(context, list);
+    return hospitals.map((entity) => entity).toList();
   }
 
-  List<Area> getCityAreas(int cityId) {
-    return areas.where((area) => area.city == cityId).toList();
+  List<Area> getCityAreas(BuildContext context, int cityId) {
+    final ref = areas.where((area) => area.city == cityId).toList();
+    final list = ref.map((area) => area.clone()).toList();
+    return translate(context, list);
   }
 
   List<Hospital> getCityHospitals(int cityId) {
