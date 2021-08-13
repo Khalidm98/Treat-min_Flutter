@@ -25,16 +25,15 @@ class AvailableScreen extends StatefulWidget {
 
 class _AvailableScreenState extends State<AvailableScreen> {
   // LatLng _location;
-  String _response = '';
-  List<Detail> _details = [];
+  List<Detail> _details;
   List _cards = [];
-  AppData _appData;
 
   List<City> _cities;
   List<Area> _areas;
+  List<FiltrationHospital> _hospitals;
 
   bool filterClicked = false;
-  bool searchOn = false;
+  bool _searchOn = false;
 
   //entities+detail lists
   ClinicCardData clinicData;
@@ -56,17 +55,17 @@ class _AvailableScreenState extends State<AvailableScreen> {
   City cityDDV;
   Area areaDDV;
   FiltrationHospital hospitalDDV;
-  bool filterOn = false;
+  bool _filterOn = false;
   final _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getHospitals(context);
     Future.delayed(Duration.zero, () async {
       final entity = ModalRoute.of(context).settings.arguments;
-      _response = await EntityAPI.getEntityDetails(context, entity);
-      final list = json.decode(_response)['details'];
+      final response = await EntityAPI.getEntityDetails(context, entity);
+      final list = json.decode(response)['details'];
+      _details = [];
       if (entity is Clinic) {
         list.forEach((json) => _details.add(ClinicDetail.fromJson(json)));
         _cards = _details.map((detail) {
@@ -79,8 +78,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
         }).toList();
       }
       setState(() {});
-
-      _appData = Provider.of<AppData>(context, listen: false);
       _prepareFilters();
     });
   }
@@ -92,16 +89,24 @@ class _AvailableScreenState extends State<AvailableScreen> {
   }
 
   Future<void> _prepareFilters() async {
-    _cities = _appData.getCities(context);
+    final appData = Provider.of<AppData>(context, listen: false);
+
+    _cities = appData.getCities(context);
     if (_cities.isEmpty) {
       await EntityAPI.getCities(context);
-      _cities = _appData.getCities(context);
+      _cities = appData.getCities(context);
     }
 
-    _areas = _appData.getAreas(context);
+    _areas = appData.getAreas(context);
     if (_areas.isEmpty) {
       await EntityAPI.getAreas(context);
-      _areas = _appData.getAreas(context);
+      _areas = appData.getAreas(context);
+    }
+
+    _hospitals = appData.getHospitals(context);
+    if (_hospitals.isEmpty) {
+      await EntityAPI.getHospitals(context);
+      _hospitals = appData.getHospitals(context);
     }
   }
 
@@ -238,13 +243,6 @@ class _AvailableScreenState extends State<AvailableScreen> {
     // }
     else {
       return entityDetailsList;
-    }
-  }
-
-  Future<void> getHospitals(BuildContext context) async {
-    final response = await EntityAPI.getHospitals(context);
-    if (!response) {
-      Navigator.pop(context);
     }
   }
 
@@ -408,30 +406,29 @@ class _AvailableScreenState extends State<AvailableScreen> {
     final List<FiltrationHospital> updatedHospitalsList =
         appData.getUpdatedHospitals(context);
     final theme = Theme.of(context);
-    final entity2 = ModalRoute.of(context).settings.arguments as EntityClass;
+    final entity = ModalRoute.of(context).settings.arguments as EntityClass;
     setAppLocalization(context);
 
-    if (_response.isEmpty) {
+    if (_details == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(entity2.name)),
+        appBar: AppBar(title: Text(entity.name)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_details.length == 0) {
       return Scaffold(
-        appBar: AppBar(title: Text(entity2.name)),
-        body: _noDetails(theme, entity2),
+        appBar: AppBar(title: Text(entity.name)),
+        body: _noDetails(theme, entity),
       );
     }
 
-    if (entity2 is Clinic) {
-      // print(_response);
+    if (entity is Clinic) {
       if (filterClicked) {
         clinicCardsListFiltered =
             clinicDataFiltered.asMap().entries.map<ClinicCard>((detail) {
           return ClinicCard(
-            clinicId: entity2.id,
+            clinicId: entity.id,
             detail: clinicDataFiltered[detail.key],
           );
         }).toList();
@@ -443,7 +440,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
         sorCardsListFiltered =
             sorDataFiltered.asMap().entries.map<ServiceCard>((detail) {
           return ServiceCard(
-            serviceId: entity2.id,
+            serviceId: entity.id,
             detail: sorDataFiltered[detail.key],
           );
         }).toList();
@@ -451,30 +448,27 @@ class _AvailableScreenState extends State<AvailableScreen> {
         sorCardsListFiltered = _cards;
       }
     }
+
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      appBar: AppBar(title: Text(entity2.name)),
+      appBar: AppBar(title: Text(entity.name)),
       body: BackgroundImage(
         child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Column(
             children: [
-              const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Expanded(
                       child: ElevatedButton(
                         child: FittedBox(
                           child: Text(
-                            filterOn ? t("close_filter") : t("filter"),
-                            textScaleFactor: 0.6,
-                            style: theme.textTheme.headline5
-                                .copyWith(color: Colors.white),
+                            _filterOn ? t('close_filter') : t('filter'),
+                            textScaleFactor: 0.8,
                           ),
                         ),
                         onPressed: () {
@@ -482,7 +476,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                             cityDDV = null;
                             areaDDV = null;
                             hospitalDDV = null;
-                            filterOn = !filterOn;
+                            _filterOn = !_filterOn;
                           });
                         },
                         style: ButtonStyle(
@@ -500,15 +494,13 @@ class _AvailableScreenState extends State<AvailableScreen> {
                       child: ElevatedButton(
                         child: FittedBox(
                           child: Text(
-                            searchOn ? t("close_search") : t("open_search"),
-                            textScaleFactor: 0.6,
-                            style: theme.textTheme.headline5
-                                .copyWith(color: Colors.white),
+                            _searchOn ? t('close_search') : t('open_search'),
+                            textScaleFactor: 0.8,
                           ),
                         ),
                         onPressed: () {
                           setState(() {
-                            searchOn = !searchOn;
+                            _searchOn = !_searchOn;
                           });
                         },
                         style: ButtonStyle(
@@ -526,10 +518,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
                       child: ElevatedButton(
                         child: FittedBox(
                           child: Text(
-                            t("sort"),
-                            textScaleFactor: 0.6,
-                            style: theme.textTheme.headline5
-                                .copyWith(color: Colors.white),
+                            t('sort'),
+                            textScaleFactor: 0.8,
                           ),
                         ),
                         onPressed: () {
@@ -548,284 +538,226 @@ class _AvailableScreenState extends State<AvailableScreen> {
                   ],
                 ),
               ),
-              if (filterOn)
+              if (_filterOn)
                 Container(
                   margin:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                      const EdgeInsets.only(bottom: 15, left: 15, right: 15),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: theme.primaryColor)),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: theme.primaryColor),
+                  ),
                   child: Column(
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            children: [
-                              Text(
-                                t("city"),
-                                style: theme.textTheme.headline6,
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: theme.primaryColor,
-                                  borderRadius: BorderRadius.circular(10),
+                          Text(t('city'), style: theme.textTheme.headline6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                dropdownColor: theme.primaryColor,
+                                iconEnabledColor: Colors.white,
+                                //isExpanded: true,
+                                value: cityDDV,
+                                hint: Text(
+                                  t('all'),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton(
-                                    dropdownColor: theme.primaryColor,
-                                    //isExpanded: true,
-                                    hint: Text(t("all"),
-                                        style: theme.textTheme.headline6
-                                            .copyWith(
-                                                fontSize: 16,
-                                                color: Colors.white)),
-                                    value: cityDDV,
-                                    elevation: 1,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        cityDDV = newValue;
-                                      });
-                                      areaDDV = null;
-                                      hospitalDDV = null;
-                                      appData.updateAreas(cityDDV);
-                                      appData.updateHospitals(cityDDV, areaDDV);
-                                    },
-                                    items: _cities
-                                        .map<DropdownMenuItem>((City city) {
-                                      return DropdownMenuItem(
-                                          value: city,
-                                          child: Text(city.name,
-                                              style: TextStyle(
-                                                  color: Colors.white)));
-                                    }).toList(),
-                                  ),
-                                ),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    cityDDV = newValue;
+                                  });
+                                  areaDDV = null;
+                                  hospitalDDV = null;
+                                  appData.updateAreas(cityDDV);
+                                  appData.updateHospitals(cityDDV, areaDDV);
+                                },
+                                items: _cities.map((City city) {
+                                  return DropdownMenuItem(
+                                    value: city,
+                                    child: Text(
+                                      city.name,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                t("area"),
-                                style: theme.textTheme.headline6,
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: theme.primaryColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: DropdownButtonHideUnderline(
-                                    child: DropdownButton(
-                                  dropdownColor: theme.primaryColor,
-                                  //isExpanded: true,
-                                  hint: Text(
-                                    updatedAreasList.length != 0
-                                        ? t("all")
-                                        : t("none"),
-                                    style: theme.textTheme.headline6.copyWith(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
-                                  value: areaDDV,
-                                  elevation: 1,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      areaDDV = newValue;
-                                    });
-                                    hospitalDDV = null;
-                                    appData.updateHospitals(cityDDV, areaDDV);
-                                  },
-                                  items: updatedAreasList
-                                      .map<DropdownMenuItem>((Area area) {
-                                    return DropdownMenuItem(
-                                        value: area,
-                                        child: Text(
-                                          area.name,
-                                          style: TextStyle(color: Colors.white),
-                                        ));
-                                  }).toList(),
-                                )),
-                              )
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 15),
-                      Column(
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            t("hospital"),
-                            style: theme.textTheme.headline6,
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 32.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: theme.primaryColor,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                  dropdownColor: theme.primaryColor,
-                                  hint: Text(
-                                      updatedHospitalsList.length != 0
-                                          ? t("all")
-                                          : t("none"),
-                                      style: theme.textTheme.headline6.copyWith(
-                                          fontSize: 16, color: Colors.white)),
-                                  value: hospitalDDV,
-                                  elevation: 1,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      hospitalDDV = newValue;
-                                    });
-                                  },
-                                  items: updatedHospitalsList
-                                      .map<DropdownMenuItem>(
-                                          (FiltrationHospital hospital) {
-                                    return DropdownMenuItem(
-                                        value: hospital,
-                                        child: Text(
-                                          hospital.name,
-                                          style: TextStyle(color: Colors.white),
-                                        ));
-                                  }).toList(),
+                          Text(t('area'), style: theme.textTheme.headline6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                dropdownColor: theme.primaryColor,
+                                iconEnabledColor: Colors.white,
+                                //isExpanded: true,
+                                value: areaDDV,
+                                hint: Text(
+                                  updatedAreasList.length == 0
+                                      ? t('none')
+                                      : t('all'),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    areaDDV = newValue;
+                                  });
+                                  hospitalDDV = null;
+                                  appData.updateHospitals(cityDDV, areaDDV);
+                                },
+                                items: updatedAreasList.map((Area area) {
+                                  return DropdownMenuItem(
+                                    value: area,
+                                    child: Text(
+                                      area.name,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 140.0),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                              theme.primaryColor,
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(t('hospital'), style: theme.textTheme.headline6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: theme.primaryColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                dropdownColor: theme.primaryColor,
+                                iconEnabledColor: Colors.white,
+                                // isExpanded: true,
+                                value: hospitalDDV,
+                                hint: Text(
+                                  updatedHospitalsList.length == 0
+                                      ? t('none')
+                                      : t('all'),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    hospitalDDV = newValue;
+                                  });
+                                },
+                                items: updatedHospitalsList
+                                    .map((FiltrationHospital hospital) {
+                                  return DropdownMenuItem(
+                                    value: hospital,
+                                    child: Text(
+                                      hospital.name,
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
-                          child: FittedBox(
-                            child: Text(
-                              t("filter"),
-                              textScaleFactor: 0.6,
-                              style: theme.textTheme.headline5
-                                  .copyWith(color: Colors.white),
-                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                            theme.primaryColor,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              if (entity2 is Clinic) {
-                                sorCardsListSearched.clear();
-                                clinicCardsListSearched.clear();
-                                clinicDataFiltered = filterCards(cityDDV,
-                                    areaDDV, hospitalDDV, Entity.clinic);
-                              } else {
-                                sorCardsListSearched.clear();
-                                clinicCardsListSearched.clear();
-                                sorDataFiltered = filterCards(
-                                  cityDDV,
-                                  areaDDV,
-                                  hospitalDDV,
-                                  Entity.clinic,
-                                );
-                              }
-                              filterClicked = true;
-                            });
-                          },
+                          minimumSize: MaterialStateProperty.all<Size>(
+                            const Size(120, 40),
+                          ),
                         ),
+                        child: Text(t('filter'), textScaleFactor: 0.8),
+                        onPressed: () {
+                          setState(() {
+                            if (entity is Clinic) {
+                              sorCardsListSearched.clear();
+                              clinicCardsListSearched.clear();
+                              clinicDataFiltered = filterCards(
+                                  cityDDV, areaDDV, hospitalDDV, Entity.clinic);
+                            } else {
+                              sorCardsListSearched.clear();
+                              clinicCardsListSearched.clear();
+                              sorDataFiltered = filterCards(
+                                cityDDV,
+                                areaDDV,
+                                hospitalDDV,
+                                Entity.clinic,
+                              );
+                            }
+                            filterClicked = true;
+                          });
+                        },
                       ),
                     ],
                   ),
                 ),
-              if (searchOn)
+              if (_searchOn)
                 Padding(
-                  padding: const EdgeInsets.all(15.0),
+                  padding:
+                      const EdgeInsets.only(bottom: 15, left: 15, right: 15),
                   child: Theme(
                     data: inputTheme(context),
                     child: TextField(
                       controller: _controller,
                       decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          hintText: entity2 is Clinic
-                              ? t('search_clinic')
-                              : t('search_service'),
-                          border: InputBorder.none,
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.cancel),
-                            onPressed: () {
-                              _controller.clear();
-                              onSearchTextChanged('');
-                            },
-                          )),
+                        prefixIcon: const Icon(Icons.search),
+                        hintText: entity is Clinic
+                            ? t('search_clinic')
+                            : t('search_service'),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.cancel),
+                          onPressed: () {
+                            _controller.clear();
+                            onSearchTextChanged('');
+                          },
+                        ),
+                      ),
                       onChanged: onSearchTextChanged,
                     ),
                   ),
                 ),
-              NotificationListener<OverscrollIndicatorNotification>(
-                onNotification: (OverscrollIndicatorNotification overScroll) {
-                  overScroll.disallowGlow();
-                  return;
-                },
-                child: Expanded(
-                  child: (clinicCardsListSearched.length == 0 &&
-                              entity2 is Clinic &&
-                              _controller.text.isNotEmpty) ||
-                          (sorCardsListSearched.length == 0 &&
-                              entity2 is Service &&
-                              _controller.text.isNotEmpty)
-                      ? Center(
-                          child: Text(
-                          t("no_search_results"),
-                          style: theme.textTheme.headline6,
-                        ))
-                      : clinicCardsListSearched.length != 0 ||
-                              sorCardsListSearched.length != 0 ||
-                              _controller.text.isNotEmpty
-                          ? ListView.builder(
-                              itemCount: entity2 is Clinic
-                                  ? clinicCardsListSearched.length
-                                  : sorCardsListSearched.length,
-                              itemBuilder: (context, index) {
-                                return entity2 is Clinic
-                                    ? clinicListSorter(
-                                        context, clinicCardsListSearched)[index]
-                                    : sorListSorter(
-                                        context, sorCardsListSearched)[index];
-                              },
-                            )
-                          : (clinicCardsListFiltered.length == 0 &&
-                                      entity2 is Clinic) ||
-                                  (sorCardsListFiltered.length == 0 &&
-                                      entity2 is Service)
-                              ? Center(
-                                  child: Text(
-                                  t("no_results"),
-                                  style: theme.textTheme.headline6,
-                                ))
-                              : ListView.builder(
-                                  itemCount: entity2 is Clinic
-                                      ? clinicCardsListFiltered.length
-                                      : sorCardsListFiltered.length,
-                                  itemBuilder: (context, index) {
-                                    return entity2 is Clinic
-                                        ? clinicListSorter(context,
-                                            clinicCardsListFiltered)[index]
-                                        : sorListSorter(context,
-                                            sorCardsListFiltered)[index];
-                                  },
-                                ),
+              Expanded(
+                child: NotificationListener<OverscrollIndicatorNotification>(
+                  onNotification: (OverscrollIndicatorNotification overScroll) {
+                    overScroll.disallowGlow();
+                    return;
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    itemCount: _cards.length,
+                    itemBuilder: (_, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child: _cards[index],
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -833,5 +765,57 @@ class _AvailableScreenState extends State<AvailableScreen> {
         ),
       ),
     );
+
+    // return Scaffold(
+    //   body: Expanded(
+    //     child: (clinicCardsListSearched.length == 0 &&
+    //                 entity is Clinic &&
+    //                 _controller.text.isNotEmpty) ||
+    //             (sorCardsListSearched.length == 0 &&
+    //                 entity is Service &&
+    //                 _controller.text.isNotEmpty)
+    //         ? Center(
+    //             child: Text(
+    //             t('no_search_results'),
+    //             style: theme.textTheme.headline6,
+    //           ))
+    //         : clinicCardsListSearched.length != 0 ||
+    //                 sorCardsListSearched.length != 0 ||
+    //                 _controller.text.isNotEmpty
+    //             ? ListView.builder(
+    //                 itemCount: entity is Clinic
+    //                     ? clinicCardsListSearched.length
+    //                     : sorCardsListSearched.length,
+    //                 itemBuilder: (context, index) {
+    //                   return entity is Clinic
+    //                       ? clinicListSorter(
+    //                           context, clinicCardsListSearched)[index]
+    //                       : sorListSorter(
+    //                           context, sorCardsListSearched)[index];
+    //                 },
+    //               )
+    //             : (clinicCardsListFiltered.length == 0 &&
+    //                         entity is Clinic) ||
+    //                     (sorCardsListFiltered.length == 0 &&
+    //                         entity is Service)
+    //                 ? Center(
+    //                     child: Text(
+    //                     t('no_results'),
+    //                     style: theme.textTheme.headline6,
+    //                   ))
+    //                 : ListView.builder(
+    //                     itemCount: entity is Clinic
+    //                         ? clinicCardsListFiltered.length
+    //                         : sorCardsListFiltered.length,
+    //                     itemBuilder: (context, index) {
+    //                       return entity is Clinic
+    //                           ? clinicListSorter(
+    //                               context, clinicCardsListFiltered)[index]
+    //                           : sorListSorter(
+    //                               context, sorCardsListFiltered)[index];
+    //                     },
+    //                   ),
+    //   ),
+    // );
   }
 }

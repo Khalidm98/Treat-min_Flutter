@@ -54,7 +54,14 @@ class ClinicCard extends StatelessWidget {
         ),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
-          color: Colors.white,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(color: theme.primaryColor),
+              left: BorderSide(color: theme.primaryColor),
+              right: BorderSide(color: theme.primaryColor),
+            ),
+          ),
           child: IntrinsicHeight(
             child: Row(
               children: [

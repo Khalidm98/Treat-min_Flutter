@@ -12,11 +12,6 @@ import '../utils/enumerations.dart';
 class EntityAPI {
   static final String _baseURL = 'https://www.treat-min.com/api';
 
-  // static final Map<String, String> _headers = {
-  //   "content-type": "application/json",
-  //   "accept": "application/json"
-  // };
-
   static Future<void> getCities(BuildContext context) async {
     final response = await http.get('$_baseURL/cities/');
     if (response.statusCode == 200) {
@@ -39,18 +34,16 @@ class EntityAPI {
     }
   }
 
-  static Future<bool> getHospitals(BuildContext context) async {
+  static Future<void> getHospitals(BuildContext context) async {
     final response = await http.get('$_baseURL/hospitals/');
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setHospitals(
         Hospitals.fromJson(json.decode(utf8.decode(response.bodyBytes)))
             .hospitals,
       );
-      return true;
     } else {
       somethingWentWrong(context);
     }
-    return false;
   }
 
   static Future<String> getCityAreaHospitals(int cityId, int areaId) async {
