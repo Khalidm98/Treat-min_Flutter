@@ -123,7 +123,7 @@ class AppData with ChangeNotifier {
     return translate(context, list);
   }
 
-  List<Hospital> getHospitals(BuildContext context) {
+  List<Hospital> getHospitals() {
     return hospitals.map((entity) => entity).toList();
   }
 

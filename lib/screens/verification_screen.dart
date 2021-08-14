@@ -7,8 +7,8 @@ import 'password_screen.dart';
 import '../api/accounts.dart';
 import '../localizations/app_localizations.dart';
 import '../utils/dialogs.dart';
+import '../utils/field_theme.dart';
 import '../widgets/background_image.dart';
-import '../widgets/input_field.dart';
 
 class VerificationScreen extends StatefulWidget {
   static const routeName = '/verify';

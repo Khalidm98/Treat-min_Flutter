@@ -7,7 +7,7 @@ import '../localizations/app_localizations.dart';
 import '../providers/app_data.dart';
 import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
-import '../widgets/input_field.dart';
+import '../widgets/search_field.dart';
 
 class SelectScreen extends StatefulWidget {
   static const routeName = '/select';
@@ -87,23 +87,10 @@ class _SelectScreenState extends State<SelectScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(15),
-                child: Theme(
-                  data: inputTheme(context),
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.search),
-                      hintText: t('search'),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.cancel),
-                        onPressed: () {
-                          _controller.clear();
-                          _search('');
-                        },
-                      ),
-                    ),
-                    onChanged: _search,
-                  ),
+                child: SearchField(
+                  controller: _controller,
+                  onChanged: _search,
+                  hintText: t('search'),
                 ),
               ),
               Expanded(

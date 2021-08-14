@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'input_field.dart';
 import 'clickable_rating_hearts.dart';
 import '../api/actions.dart';
 import '../localizations/app_localizations.dart';
 import '../models/reservations.dart';
 import '../utils/enumerations.dart';
+import '../utils/field_theme.dart';
 
 class ReservationCard extends StatefulWidget {
   final ReservedEntityDetails reservedEntityDetails;

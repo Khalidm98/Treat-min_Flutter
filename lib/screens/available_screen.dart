@@ -10,8 +10,8 @@ import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../widgets/background_image.dart';
 import '../widgets/clinic_card.dart';
-import '../widgets/input_field.dart';
 import '../widgets/modal_sheet_list_tile.dart';
+import '../widgets/search_field.dart';
 import '../widgets/service_card.dart';
 
 class AvailableScreen extends StatefulWidget {
@@ -86,10 +86,10 @@ class _AvailableScreenState extends State<AvailableScreen> {
       _areas = appData.getAreas(context);
     }
 
-    _hospitals = appData.getHospitals(context);
+    _hospitals = appData.getHospitals();
     if (_hospitals.isEmpty) {
       await EntityAPI.getHospitals(context);
-      _hospitals = appData.getHospitals(context);
+      _hospitals = appData.getHospitals();
     }
   }
 
@@ -564,7 +564,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                               setState(() {
                                 _city = _area = _hospital = null;
                                 _areas = appData.getAreas(context);
-                                _hospitals = appData.getHospitals(context);
+                                _hospitals = appData.getHospitals();
                                 _filterSelected = false;
                               });
                             },
@@ -590,25 +590,12 @@ class _AvailableScreenState extends State<AvailableScreen> {
                 Padding(
                   padding:
                       const EdgeInsets.only(bottom: 15, left: 15, right: 15),
-                  child: Theme(
-                    data: inputTheme(context),
-                    child: TextField(
-                      onChanged: _search,
-                      controller: _controller,
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.search),
-                        hintText: entity is Clinic
-                            ? t('search_clinic')
-                            : t('search_service'),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.cancel),
-                          onPressed: () {
-                            _controller.clear();
-                            _search('');
-                          },
-                        ),
-                      ),
-                    ),
+                  child: SearchField(
+                    controller: _controller,
+                    onChanged: _search,
+                    hintText: entity is Clinic
+                        ? t('search_clinic')
+                        : t('search_service'),
                   ),
                 ),
               Expanded(
