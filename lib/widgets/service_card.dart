@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'rating_hearts.dart';
 import '../localizations/app_localizations.dart';
-import '../models/entity_details.dart';
 import '../models/entity.dart';
+import '../models/entity_details.dart';
 import '../screens/booking_screen.dart';
 
 class ServiceCard extends StatelessWidget {
+  final Service service;
   final ServiceDetail detail;
-  final int serviceId;
 
-  const ServiceCard({@required this.detail, @required this.serviceId});
+  const ServiceCard({@required this.service, @required this.detail});
 
   @override
   Widget build(BuildContext context) {
@@ -103,10 +103,10 @@ class ServiceCard extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pushNamed(
                           BookingScreen.routeName,
-                          arguments: BookNowScreenData(
-                            entityId: serviceId.toString(),
-                            cardDetail: detail,
-                          ),
+                          arguments: {
+                            'entity': service,
+                            'detail': detail,
+                          },
                         );
                       },
                     ),

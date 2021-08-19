@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,10 +7,9 @@ import 'tabs_screen.dart';
 import '../api/actions.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
+import '../models/entity.dart';
 import '../models/reviews.dart';
 import '../models/schedule.dart';
-import '../models/entity.dart';
-import '../utils/enumerations.dart';
 import '../widgets/background_image.dart';
 import '../widgets/book_now_dropdown_list.dart';
 import '../widgets/rating_hearts.dart';
@@ -25,19 +23,35 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
+  var _entity;
+  var _detail;
+
+  List<Schedule> _schedules = [];
+  List<Review> _reviews = [];
+
   bool expansionListChanger = false;
   bool ddvExists = true;
   bool pickedDateCheck = true;
   bool pickedDate = false;
-  Schedule dropDownValue = Schedule(day: null, start: null, end: null);
-  Future<String> schedulesResponse;
-  Future<String> reviewsResponse;
+  Schedule dropDownValue = Schedule();
   String reserveResponse;
-  Reviews reviews;
-  Schedules schedules;
   String scheduleId;
-  String address;
   DateTime appointmentDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      final detail = ModalRoute.of(context).settings.arguments as Map;
+      _entity = detail['entity'];
+      _detail = detail['detail'];
+      var list = await EntityAPI.getEntitySchedules(context, _entity, _detail);
+      list.forEach((json) => _schedules.add(Schedule.fromJson(json)));
+      list = await EntityAPI.getEntityReviews(context, _entity, _detail);
+      list.forEach((json) => _reviews.add(Review.fromJson(json)));
+      setState(() {});
+    });
+  }
 
   static const Map<int, String> weekDays = {
     1: "MON",
@@ -287,301 +301,183 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    final widgetsBinding = WidgetsBinding.instance;
-    widgetsBinding.addPostFrameCallback((callback) {
-      if (ModalRoute.of(context).settings.arguments != null) {
-        dynamic receivedData = ModalRoute.of(context).settings.arguments;
-        String entity = entityToString(receivedData.entity);
-        String entityId = receivedData.clinicId;
-        String detailId = receivedData.cardDetail.id.toString();
-        schedulesResponse =
-            EntityAPI.getEntitySchedules(entity, entityId, detailId);
-        reviewsResponse =
-            EntityAPI.getEntityReviews(entity, entityId, detailId);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
     final theme = Theme.of(context);
-    BookNowScreenData receivedData = ModalRoute.of(context).settings.arguments;
-    String entity = entityToString(receivedData.entity);
-    String entityId = receivedData.entityId;
-    String detailId = receivedData.cardDetail.id.toString();
-
     setAppLocalization(context);
 
+    if (_schedules.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text(t('book_now'))),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(title: Text(t('book_now'))),
       body: BackgroundImage(
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 15),
-                        child: CircleAvatar(
-                          backgroundColor: theme.accentColor,
-                          radius: 75,
-                          child: CircleAvatar(
-                              radius: 70,
-                              child: ClipOval(
-                                  child: Image.network(
-                                "http://treat-min.com/media/photos/hospitals/${receivedData.cardDetail.hospital.id}.png",
-                                fit: BoxFit.fill,
-                                errorBuilder: (_, __, ___) {
-                                  return Image.asset(
-                                    'assets/icons/default.png',
-                                    fit: BoxFit.fill,
-                                  );
-                                },
-                              ))),
-                        ),
-                      ),
-                      FittedBox(
-                        child: Text(
-                          receivedData.entity == Entity.service
-                              ? receivedData.cardDetail.hospital.name
-                              : receivedData.cardDetail.doctor.name,
-                          style: theme.textTheme.headline4,
-                        ),
-                      ),
-                      if (receivedData.entity == Entity.clinic)
-                        FittedBox(
-                          child: Text(
-                            receivedData.cardDetail.doctor.title,
-                            style: theme.textTheme.headline5
-                                .copyWith(fontWeight: FontWeight.w500),
-                            textScaleFactor: 0.9,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      const SizedBox(height: 10),
-                      address == null
-                          ? const SizedBox()
-                          : Text(
-                              address,
-                              textAlign: TextAlign.center,
-                              textDirection: TextDirection.rtl,
-                              style: theme.textTheme.headline6,
-                            ),
-                      const SizedBox(height: 10),
-                      RatingHearts(
-                        size: 25,
-                        rating: receivedData.cardDetail.ratingUsers != 0
-                            ? (receivedData.cardDetail.ratingTotal ~/
-                                receivedData.cardDetail.ratingUsers)
-                            : 0,
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            t("rating_from"),
-                            style: theme.textTheme.headline6,
-                          ),
-                          Text(
-                            "${receivedData.cardDetail.ratingUsers == null ? 0 : receivedData.cardDetail.ratingUsers}",
-                            style: theme.textTheme.headline6,
-                          ),
-                          Text(
-                            t("visitors"),
-                            style: theme.textTheme.headline6,
-                          )
-                        ],
-                      )
-                    ],
+            CircleAvatar(
+              backgroundColor: theme.accentColor,
+              radius: 75,
+              child: CircleAvatar(
+                radius: 70,
+                child: ClipOval(
+                  child: Image.network(
+                    'https://treat-min.com/media/photos/hospitals/${_detail.hospital.id}.png',
+                    fit: BoxFit.fill,
+                    errorBuilder: (_, __, ___) {
+                      return Image.asset(
+                        'assets/icons/default.png',
+                        fit: BoxFit.fill,
+                      );
+                    },
                   ),
                 ),
-                const SizedBox(height: 10),
-                FutureBuilder(
-                  future: schedulesResponse,
-                  builder: (_, response) {
-                    if (response.data == "Something went wrong") {
-                      return Center(
-                        child: Text(
-                          t("wrong"),
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.headline6
-                              .copyWith(color: theme.errorColor),
-                        ),
-                      );
+              ),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              _entity is Clinic ? _detail.doctor.name : _detail.hospital.name,
+              style: theme.textTheme.headline5,
+              textAlign: TextAlign.center,
+            ),
+            if (_entity is Clinic)
+              Text(
+                _detail.doctor.title,
+                style: theme.textTheme.headline6,
+                textAlign: TextAlign.center,
+              ),
+            Text(
+              _detail.hospital.address,
+              textAlign: TextAlign.center,
+              textDirection: TextDirection.rtl,
+            ),
+            const SizedBox(height: 15),
+            Center(
+              child: RatingHearts(
+                size: 25,
+                rating: _detail.ratingUsers == 0
+                    ? 0
+                    : _detail.ratingTotal ~/ _detail.ratingUsers,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              t('rating_from') + '${_detail.ratingUsers}' + t('visitors'),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Container(
+              child: BookNowDropDownList(
+                dropDownValueGetter: updateDropDownValue,
+                scheduleList: _schedules,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: theme.accentColor),
+                ),
+              ),
+            ),
+            if (!ddvExists)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  t('schedule_error'),
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            const SizedBox(height: 10),
+            Container(
+                child: ListTile(
+                  leading: Text(
+                    !pickedDate
+                        ? t("choose_appointment")
+                        : appointmentDate.toString().substring(0, 10),
+                    style: theme.textTheme.headline6.copyWith(fontSize: 16),
+                  ),
+                  trailing: Icon(
+                    Icons.date_range,
+                    size: 30,
+                    color: theme.primaryColor,
+                  ),
+                  onTap: () async {
+                    if (dropDownValue.day != null) {
+                      await _selectDate(context, dropDownValue);
+                    } else {
+                      setState(() {
+                        ddvExists = false;
+                      });
                     }
-                    if (response.hasData) {
-                      address = json.decode(response.data.toString())['address'];
-                      schedules = schedulesFromJson(response.data);
-                      return Container(
-                        child: BookNowDropDownList(
-                          dropDownValueGetter: updateDropDownValue,
-                          scheduleList: schedules.schedules,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(color: theme.accentColor),
-                          ),
-                        ),
-                      );
-                    }
-                    return CircularProgressIndicator();
                   },
                 ),
-                if (!ddvExists)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      t('schedule_error'),
-                      style:
-                          theme.textTheme.subtitle2.copyWith(color: Colors.red),
-                    ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: theme.accentColor),
                   ),
-                const SizedBox(height: 10),
-                Container(
-                    child: ListTile(
-                      leading: Text(
-                        !pickedDate
-                            ? t("choose_appointment")
-                            : appointmentDate.toString().substring(0, 10),
-                        style: theme.textTheme.headline6.copyWith(fontSize: 16),
-                      ),
-                      trailing: Icon(
-                        Icons.date_range,
-                        size: 30,
-                        color: theme.primaryColor,
-                      ),
-                      onTap: () async {
-                        if (dropDownValue.day != null) {
-                          await _selectDate(context, dropDownValue);
-                        } else {
-                          setState(() {
-                            ddvExists = false;
-                          });
-                        }
-                      },
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(color: theme.accentColor),
-                      ),
-                    )),
-                if (!pickedDateCheck)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      t('date_error'),
-                      style:
-                          theme.textTheme.subtitle2.copyWith(color: Colors.red),
-                    ),
-                  ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text(t('book_now')),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                      theme.accentColor,
-                    ),
-                  ),
-                  onPressed: () {
-                    checkToBook(entity, entityId, detailId, theme, context);
-                  },
+                )),
+            if (!pickedDateCheck)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  t('date_error'),
+                  style: const TextStyle(color: Colors.red),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: !expansionListChanger
-                          ? theme.primaryColorLight
-                          : Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.primaryColorLight
-                              .withOpacity(!expansionListChanger ? 0.5 : 0),
-                          blurRadius: !expansionListChanger ? 3 : 0,
-                        ),
-                      ],
-                    ),
-                    child: ExpansionTile(
-                      onExpansionChanged: (bool) {
-                        setState(() {
-                          expansionListChanger = bool;
-                        });
-                      },
-                      title: Text(
-                        t(
-                          expansionListChanger
-                              ? 'hide_reviews'
-                              : 'view_reviews',
-                        ),
-                        style: theme.textTheme.button.copyWith(fontSize: 16),
-                        textAlign: TextAlign.start,
-                      ),
-                      children: [
-                        FutureBuilder(
-                          future: reviewsResponse,
-                          builder: (_, response) {
-                            if (response.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-                            if (response.data == "Something went wrong") {
-                              return Card(child: Text(t("wrong")));
-                            }
-                            if (response.hasData) {
-                              reviews = reviewsFromJson(response.data);
-                              return reviews.reviews.length != 0
-                                  ? ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: ClampingScrollPhysics(),
-                                      itemCount: reviews.reviews.length,
-                                      itemBuilder: (_, index) {
-                                        return ReviewBox(
-                                            reviews.reviews[index]);
-                                      })
-                                  : Card(
-                                      margin: EdgeInsets.zero,
-                                      child: ListTile(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                        trailing: Icon(
-                                          Icons.rate_review,
-                                          color: theme.accentColor,
-                                        ),
-                                        title: Text(
-                                          t("no_current_reviews"),
-                                          style: theme.textTheme.subtitle2
-                                              .copyWith(
-                                                  fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                    );
-                            }
-                            return Center(
-                              child: Text(
-                                t("wrong"),
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.headline6
-                                    .copyWith(color: theme.errorColor),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+              ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              child: Text(t('book_now')),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  theme.accentColor,
                 ),
-              ],
+              ),
+              onPressed: () {
+                checkToBook(
+                    _entity is Clinic ? 'clinics' : 'services',
+                    _entity.id.toString(),
+                    _detail.id.toString(),
+                    theme,
+                    context);
+              },
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                color: !expansionListChanger
+                    ? theme.primaryColorLight
+                    : Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
+              child: ExpansionTile(
+                onExpansionChanged: (bool) {
+                  setState(() {
+                    expansionListChanger = bool;
+                  });
+                },
+                title: Text(
+                  t(expansionListChanger ? 'hide_reviews' : 'view_reviews'),
+                ),
+                children: [
+                  _reviews.length != 0
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemCount: _reviews.length,
+                          itemBuilder: (_, index) {
+                            return ReviewBox(_reviews[index]);
+                          })
+                      : ListTile(
+                          trailing:
+                              Icon(Icons.rate_review, color: theme.accentColor),
+                          title: Text(
+                            t('no_current_reviews'),
+                            style: theme.textTheme.subtitle2,
+                          ),
+                        ),
+                ],
+              ),
             )
           ],
         ),

@@ -1,5 +1,3 @@
-import '../utils/enumerations.dart';
-
 class NamedEntity {
   int id;
   String name;
@@ -66,6 +64,7 @@ class Area extends NamedEntity {
 class Hospital extends NamedEntity {
   int city;
   int area;
+  String address;
   String phone;
   double latitude;
   double longitude;
@@ -73,6 +72,7 @@ class Hospital extends NamedEntity {
   Hospital.fromJson(Map<String, dynamic> json)
       : city = json['city'],
         area = json['area'],
+        address = json['address'],
         phone = json['phone'],
         latitude = double.parse(json['latitude']),
         longitude = double.parse(json['longitude']),
@@ -82,12 +82,4 @@ class Hospital extends NamedEntity {
       : city = json['city'],
         area = json['area'],
         super.fromJson(json);
-}
-
-class BookNowScreenData {
-  final String entityId;
-  final Entity entity;
-  final dynamic cardDetail;
-
-  BookNowScreenData({this.entity, this.entityId, this.cardDetail});
 }

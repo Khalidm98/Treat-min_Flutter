@@ -33,7 +33,7 @@ class ReviewBox extends StatelessWidget {
               ClipOval(
                 child: CircleAvatar(
                   child: Image.network(
-                    "http://treat-min.com/media/photos/users/${review.userId}.png",
+                    "https://treat-min.com/media/photos/users/${review.userId}.png",
                     fit: BoxFit.fill,
                     errorBuilder: (_, __, ___) {
                       return Image.asset(

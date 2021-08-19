@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'rating_hearts.dart';
 import '../localizations/app_localizations.dart';
-import '../models/entity_details.dart';
 import '../models/entity.dart';
+import '../models/entity_details.dart';
 import '../screens/booking_screen.dart';
 
 class ClinicCard extends StatelessWidget {
+  final Clinic clinic;
   final ClinicDetail detail;
-  final int clinicId;
 
-  const ClinicCard({@required this.detail, @required this.clinicId});
+  const ClinicCard({@required this.clinic, @required this.detail});
 
   @override
   Widget build(BuildContext context) {
@@ -132,10 +132,10 @@ class ClinicCard extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pushNamed(
                           BookingScreen.routeName,
-                          arguments: BookNowScreenData(
-                            entityId: clinicId.toString(),
-                            cardDetail: detail,
-                          ),
+                          arguments: {
+                            'entity': clinic,
+                            'detail': detail,
+                          },
                         );
                       },
                     ),

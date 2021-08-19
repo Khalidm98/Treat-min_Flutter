@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../models/entity.dart';
+import '../models/entity_details.dart';
 import '../providers/app_data.dart';
 import '../utils/dialogs.dart';
 import '../utils/enumerations.dart';
@@ -44,16 +45,6 @@ class EntityAPI {
     }
   }
 
-  static Future<String> getCityAreaHospitals(int cityId, int areaId) async {
-    final response =
-        await http.get('$_baseURL/cities/$cityId/areas/$areaId/hospitals/');
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      return "Something went wrong!";
-    }
-  }
-
   static Future<void> getEntities(BuildContext context, Entity entity) async {
     final response = await http.get('$_baseURL/${entityToString(entity)}/');
     if (response.statusCode == 200) {
@@ -66,39 +57,45 @@ class EntityAPI {
     }
   }
 
-  static Future<String> getEntityDetails(
+  static Future<List> getEntityDetails(
       BuildContext context, NamedEntity entity) async {
     final response = await http.get(
       '$_baseURL/${entity.toString()}/details/',
     );
 
     if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes);
+      return json.decode(utf8.decode(response.bodyBytes))['details'];
     } else {
       somethingWentWrongPop(context);
     }
-    return '';
+    return [];
   }
 
-  static Future<String> getEntitySchedules(
-      String entity, String entityId, String entityDetailId) async {
+  static Future<List> getEntitySchedules(
+      BuildContext context, NamedEntity entity, Detail detail) async {
     final response = await http.get(
-      '$_baseURL/$entity/$entityId/details/$entityDetailId/schedules/',
+      '$_baseURL/${entity.toString()}/${detail.toString()}/schedules/',
     );
+
     if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes);
+      return json.decode(utf8.decode(response.bodyBytes))['schedules'];
+    } else {
+      somethingWentWrongPop(context);
     }
-    return "Something went wrong";
+    return [];
   }
 
-  static Future<String> getEntityReviews(
-      String entity, String entityId, String entityDetailId) async {
+  static Future<List> getEntityReviews(
+      BuildContext context, NamedEntity entity, Detail detail) async {
     final response = await http.get(
-      '$_baseURL/$entity/$entityId/details/$entityDetailId/reviews/',
+      '$_baseURL/${entity.toString()}/${detail.toString()}/reviews/',
     );
+
     if (response.statusCode == 200) {
-      return utf8.decode(response.bodyBytes);
+      return json.decode(utf8.decode(response.bodyBytes))['reviews'];
+    } else {
+      somethingWentWrongPop(context);
     }
-    return "Something went wrong";
+    return [];
   }
 }

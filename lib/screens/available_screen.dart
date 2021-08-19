@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,18 +44,17 @@ class _AvailableScreenState extends State<AvailableScreen> {
     super.initState();
     Future.delayed(Duration.zero, () async {
       final entity = ModalRoute.of(context).settings.arguments;
-      final response = await EntityAPI.getEntityDetails(context, entity);
-      final list = json.decode(response)['details'];
+      final list = await EntityAPI.getEntityDetails(context, entity);
       _details = [];
       if (entity is Clinic) {
         list.forEach((json) => _details.add(ClinicDetail.fromJson(json)));
         _cards = _details.map((detail) {
-          return ClinicCard(detail: detail, clinicId: entity.id);
+          return ClinicCard(clinic: entity, detail: detail);
         }).toList();
       } else if (entity is Service) {
         list.forEach((json) => _details.add(ServiceDetail.fromJson(json)));
         _cards = _details.map((detail) {
-          return ServiceCard(detail: detail, serviceId: entity.id);
+          return ServiceCard(service: entity, detail: detail);
         }).toList();
       }
       await _prepareFilters();
@@ -320,11 +318,11 @@ class _AvailableScreenState extends State<AvailableScreen> {
 
     if (entity is Clinic) {
       _cards = list.map((detail) {
-        return ClinicCard(detail: detail, clinicId: entity.id);
+        return ClinicCard(clinic: entity, detail: detail);
       }).toList();
     } else {
       _cards = list.map((detail) {
-        return ServiceCard(detail: detail, serviceId: entity.id);
+        return ServiceCard(service: entity, detail: detail);
       }).toList();
     }
 
