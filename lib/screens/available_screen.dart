@@ -10,7 +10,6 @@ import '../models/entity.dart';
 import '../providers/app_data.dart';
 import '../widgets/background_image.dart';
 import '../widgets/clinic_card.dart';
-import '../widgets/modal_sheet_list_tile.dart';
 import '../widgets/search_field.dart';
 import '../widgets/service_card.dart';
 
@@ -149,119 +148,127 @@ class _AvailableScreenState extends State<AvailableScreen> {
     setState(() {});
   }
 
-  void onSortClick(BuildContext context, ThemeData theme) {
+  void _showSortOptions() {
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10.0),
-                color: theme.primaryColorLight,
-                alignment: Alignment.center,
-                child: Text(
-                  t('sort_by'),
-                  style: theme.textTheme.headline5.copyWith(
-                    color: Colors.white,
-                  ),
+        final appData = Provider.of<AppData>(context);
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10.0),
+              color: theme.primaryColorLight,
+              alignment: Alignment.center,
+              child: Text(
+                t('sort_by'),
+                style: theme.textTheme.headline5.copyWith(
+                  color: Colors.white,
                 ),
               ),
-              ModalSheetListTile(
-                text: t('price_low'),
-                value: Provider.of<AppData>(context).sortingVars[0],
-                onSwitchChange:
-                    Provider.of<AppData>(context).changeSortPriceLowHigh,
-              ),
-              ModalSheetListTile(
-                text: t('price_high'),
-                value: Provider.of<AppData>(context).sortingVars[1],
-                onSwitchChange:
-                    Provider.of<AppData>(context).changeSortPriceHighLow,
-              ),
-              // ModalSheetListTile(
-              //   text: t('nearest'),
-              //   value: Provider.of<AppData>(context).sortingVars[2],
-              //   onSwitchChange: () async {
-              //     final nearest =
-              //         Provider.of<AppData>(context).sortingVars[2];
-              //     if (nearest) {
-              //       Provider.of<AppData>(context).changeSortNearest();
-              //     } else {
-              //       final location = await getLocation();
-              //       if (location != null) {
-              //         _location = LatLng(location.latitude, location.longitude);
-              //         Provider.of<AppData>(context).changeSortNearest();
-              //       }
-              //     }
-              //   },
-              // ),
-            ],
-          ),
+            ),
+            SwitchListTile(
+              dense: true,
+              title: Text(t('rating_high')),
+              activeColor: theme.primaryColor,
+              value: appData.sortingVars[1],
+              onChanged: (val) {
+                appData.sort(1);
+                _sort(1, val);
+              },
+            ),
+            SwitchListTile(
+              dense: true,
+              title: Text(t('price_low')),
+              activeColor: theme.primaryColor,
+              value: appData.sortingVars[2],
+              onChanged: (val) {
+                appData.sort(2);
+                _sort(2, val);
+              },
+            ),
+            SwitchListTile(
+              dense: true,
+              title: Text(t('price_high')),
+              activeColor: theme.primaryColor,
+              value: appData.sortingVars[3],
+              onChanged: (val) {
+                appData.sort(3);
+                _sort(3, val);
+              },
+            ),
+            // ModalSheetListTile(
+            //   text: t('nearest'),
+            //   value: Provider.of<AppData>(context).sortingVars[2],
+            //   onSwitchChange: () async {
+            //     final nearest =
+            //         Provider.of<AppData>(context).sortingVars[2];
+            //     if (nearest) {
+            //       Provider.of<AppData>(context).changeSortNearest();
+            //     } else {
+            //       final location = await getLocation();
+            //       if (location != null) {
+            //         _location = LatLng(location.latitude, location.longitude);
+            //         Provider.of<AppData>(context).changeSortNearest();
+            //       }
+            //     }
+            //   },
+            // ),
+          ],
         );
       },
     );
   }
 
-  List<ClinicCard> clinicListSorter(
-      BuildContext context, List<ClinicCard> entityDetailsList) {
-    if (Provider.of<AppData>(context).sortingVars[0] == true) {
-      entityDetailsList
-          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
-      return entityDetailsList;
-    } else if (Provider.of<AppData>(context).sortingVars[1] == true) {
-      entityDetailsList
-          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
-      return entityDetailsList.reversed.toList();
+  void _sort(int index, bool value) {
+    if (!value) {
+      return;
+    } else if (index == 0) {
+      // nearest
+      // else if (Provider.of<AppData>(context).sortingVars[2] == true) {
+      //   entityDetailsList.sort((a, b) {
+      //     final distA = distance(
+      //       _location,
+      //       LatLng(a.clinicCardData.hospital.lat, a.clinicCardData.hospital.lng),
+      //     );
+      //     final distB = distance(
+      //       _location,
+      //       LatLng(b.clinicCardData.hospital.lat, b.clinicCardData.hospital.lng),
+      //     );
+      //     return distA.compareTo(distB);
+      //   });
+      //   return entityDetailsList;
+      // }
+    } else if (index == 1) {
+      _details.sort((a, b) {
+        if (a.ratingUsers == 0 && b.ratingUsers == 0) {
+          return 0.compareTo(0);
+        } else if (a.ratingUsers == 0) {
+          return 0.compareTo(b.ratingTotal / b.ratingUsers);
+        } else if (b.ratingUsers == 0) {
+          return (a.ratingTotal / a.ratingUsers).compareTo(0);
+        } else {
+          return (a.ratingTotal / a.ratingUsers)
+              .compareTo(b.ratingTotal / b.ratingUsers);
+        }
+      });
+      _details = _details.reversed.toList();
+    } else if (index == 2) {
+      _details.sort((a, b) => a.price.compareTo(b.price));
+    } else if (index == 3) {
+      _details.sort((a, b) => a.price.compareTo(b.price));
+      _details = _details.reversed.toList();
     }
-    // else if (Provider.of<AppData>(context).sortingVars[2] == true) {
-    //   entityDetailsList.sort((a, b) {
-    //     final distA = distance(
-    //       _location,
-    //       LatLng(a.clinicCardData.hospital.lat, a.clinicCardData.hospital.lng),
-    //     );
-    //     final distB = distance(
-    //       _location,
-    //       LatLng(b.clinicCardData.hospital.lat, b.clinicCardData.hospital.lng),
-    //     );
-    //     return distA.compareTo(distB);
-    //   });
-    //   return entityDetailsList;
-    // }
-    else {
-      return entityDetailsList;
-    }
-  }
 
-  List<ServiceCard> sorListSorter(
-      BuildContext context, List<ServiceCard> entityDetailsList) {
-    if (Provider.of<AppData>(context).sortingVars[0] == true) {
-      entityDetailsList
-          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
-      return entityDetailsList;
-    } else if (Provider.of<AppData>(context).sortingVars[1] == true) {
-      entityDetailsList
-          .sort((a, b) => a.detail.price.compareTo(b.detail.price));
-      return entityDetailsList.reversed.toList();
-    }
-    // else if (Provider.of<AppData>(context).sortingVars[2] == true) {
-    //   entityDetailsList.sort((a, b) {
-    //     final distA = distance(
-    //       _location,
-    //       LatLng(a.sorCardData.hospital.lat, a.sorCardData.hospital.lng),
-    //     );
-    //     final distB = distance(
-    //       _location,
-    //       LatLng(b.sorCardData.hospital.lat, b.sorCardData.hospital.lng),
-    //     );
-    //     return distA.compareTo(distB);
-    //   });
-    //   return entityDetailsList;
-    // }
-    else {
-      return entityDetailsList;
+    if (_filterSelected && _controller.text.isNotEmpty) {
+      _filter();
+      _search(_controller.text);
+    } else if (_filterSelected) {
+      _filter();
+    } else if (_controller.text.isNotEmpty) {
+      _search(_controller.text);
     }
   }
 
@@ -363,7 +370,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                       child: ElevatedButton(
                         child: FittedBox(
                           child: Text(
-                            _searchOn ? t('close_search') : t('open_search'),
+                            _searchOn ? t('close_search') : t('search'),
                             textScaleFactor: 0.8,
                           ),
                         ),
@@ -388,9 +395,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         child: FittedBox(
                           child: Text(t('sort'), textScaleFactor: 0.8),
                         ),
-                        onPressed: () {
-                          onSortClick(context, theme);
-                        },
+                        onPressed: _showSortOptions,
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                             theme.primaryColor,
@@ -598,24 +603,36 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         : t('search_service'),
                   ),
                 ),
-              Expanded(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification: (OverscrollIndicatorNotification overScroll) {
-                    overScroll.disallowGlow();
-                    return;
-                  },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    itemCount: _cards.length,
-                    itemBuilder: (_, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 15),
-                        child: _cards[index],
-                      );
-                    },
-                  ),
-                ),
-              ),
+              _cards.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: Text(
+                        t('no_results'),
+                        style: theme.textTheme.headline6,
+                      ),
+                    )
+                  : Expanded(
+                      child:
+                          NotificationListener<OverscrollIndicatorNotification>(
+                        onNotification:
+                            (OverscrollIndicatorNotification overScroll) {
+                          overScroll.disallowGlow();
+                          return;
+                        },
+                        child: ListView.builder(
+                          padding: entity is Clinic
+                              ? const EdgeInsets.symmetric(horizontal: 10)
+                              : const EdgeInsets.symmetric(horizontal: 15),
+                          itemCount: _cards.length,
+                          itemBuilder: (_, index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: _cards[index],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),

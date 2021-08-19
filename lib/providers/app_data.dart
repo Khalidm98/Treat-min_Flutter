@@ -18,7 +18,7 @@ class AppData with ChangeNotifier {
   List<Area> areas = [];
   List<Hospital> hospitals = [];
 
-  List<bool> sortingVars = [false, false];
+  List<bool> sortingVars = [false, false, false, false];
 
   Future<void> setLanguage(BuildContext context, String languageCode) async {
     final prefs = await SharedPreferences.getInstance();
@@ -141,21 +141,10 @@ class AppData with ChangeNotifier {
     return hospitals.where((hospital) => hospital.area == areaId).toList();
   }
 
-  void changeSortPriceLowHigh() {
-    sortingVars[0] = !sortingVars[0];
-    if (sortingVars[0] == true) {
-      sortingVars[1] = false;
-      // sortingVars[2] = false;
-    }
-    notifyListeners();
-  }
-
-  void changeSortPriceHighLow() {
-    sortingVars[1] = !sortingVars[1];
-    if (sortingVars[1] == true) {
-      sortingVars[0] = false;
-      // sortingVars[2] = false;
-    }
+  void sort(int index) {
+    final value = !sortingVars[index];
+    sortingVars = [false, false, false, false];
+    sortingVars[index] = value;
     notifyListeners();
   }
 }

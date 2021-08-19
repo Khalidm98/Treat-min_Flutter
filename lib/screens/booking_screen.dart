@@ -392,7 +392,7 @@ class _BookingScreenState extends State<BookingScreen> {
                             style: theme.textTheme.headline6,
                           ),
                           Text(
-                            "${receivedData.cardDetail.ratingUsers == null ? 0 : receivedData.cardDetail.ratingUsers} ",
+                            "${receivedData.cardDetail.ratingUsers == null ? 0 : receivedData.cardDetail.ratingUsers}",
                             style: theme.textTheme.headline6,
                           ),
                           Text(

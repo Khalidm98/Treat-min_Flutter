@@ -80,7 +80,7 @@ class _ReservationCardState extends State<ReservationCard> {
               side: BorderSide(width: 4.0, color: theme.primaryColor),
             ),
             title: Text(
-              t('Rate Your Appointment'),
+              t('review'),
               textAlign: TextAlign.center,
             ),
             content: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -147,7 +147,7 @@ class _ReservationCardState extends State<ReservationCard> {
                             );
                           });
                     },
-                    child: Text(t('Submit Review'), maxLines: 1),
+                    child: Text(t('submit_review'), maxLines: 1),
                   ),
                   OutlinedButton(
                     onPressed: () {

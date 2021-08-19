@@ -58,7 +58,6 @@ class ClinicCard extends StatelessWidget {
             color: Colors.white,
             border: Border(
               bottom: BorderSide(color: theme.primaryColor),
-              left: BorderSide(color: theme.primaryColor),
               right: BorderSide(color: theme.primaryColor),
             ),
           ),
