@@ -7,7 +7,7 @@ import '../localizations/app_localizations.dart';
 import '../providers/user_data.dart';
 import '../utils/dialogs.dart';
 
-class ActionAPI {
+class AppointmentAPI {
   static final String _baseURL = 'https://www.treat-min.com/api';
 
   static String token(BuildContext context) {
@@ -18,7 +18,7 @@ class ActionAPI {
     await Provider.of<UserData>(context, listen: false).refreshToken();
   }
 
-  static Future reserveAppointment(
+  static Future reserve(
       BuildContext context,
       String entity,
       String entityId,
@@ -66,7 +66,7 @@ class ActionAPI {
     return false;
   }
 
-  static Future cancelAppointment(
+  static Future cancel(
       BuildContext context, String entity, int appointmentId) async {
     final response = await http.delete(
       '$_baseURL/user/appointments/$entity/$appointmentId/cancel/',
@@ -87,7 +87,7 @@ class ActionAPI {
     return "Something went wrong";
   }
 
-  static Future rateAppointment(
+  static Future review(
       BuildContext context,
       String entity,
       String entityId,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/reviews.dart';
+import '../models/review.dart';
 import 'rating_hearts.dart';
 
 class ReviewBox extends StatelessWidget {

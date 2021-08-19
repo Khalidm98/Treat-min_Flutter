@@ -33,14 +33,6 @@ class Service extends NamedEntity {
   Service clone() => Service(id, name);
 }
 
-class Doctor extends NamedEntity {
-  String title;
-
-  Doctor.fromJson(Map<String, dynamic> json)
-      : title = json['title'],
-        super.fromJson(json);
-}
-
 class City extends NamedEntity {
   City(id, name) : super(id, name);
 
@@ -59,6 +51,14 @@ class Area extends NamedEntity {
         super.fromJson(json);
 
   Area clone() => Area(id, name, city);
+}
+
+class Doctor extends NamedEntity {
+  String title;
+
+  Doctor.fromJson(Map<String, dynamic> json)
+      : title = json['title'],
+        super.fromJson(json);
 }
 
 class Hospital extends NamedEntity {

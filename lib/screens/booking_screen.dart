@@ -4,11 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'auth_screen.dart';
 import 'tabs_screen.dart';
-import '../api/actions.dart';
+import '../api/appointments.dart';
 import '../api/entities.dart';
 import '../localizations/app_localizations.dart';
 import '../models/entity.dart';
-import '../models/reviews.dart';
+import '../models/review.dart';
 import '../models/schedule.dart';
 import '../widgets/background_image.dart';
 import '../widgets/book_now_dropdown_list.dart';
@@ -120,7 +120,7 @@ class _BookingScreenState extends State<BookingScreen> {
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: GestureDetector(
             onTap: () async {
-              await ActionAPI.getUserAppointments(context);
+              await AppointmentAPI.getUserAppointments(context);
               Navigator.pop(context);
               Navigator.of(context).pushNamedAndRemoveUntil(
                   TabsScreen.routeName, (route) => false,
@@ -283,7 +283,7 @@ class _BookingScreenState extends State<BookingScreen> {
       }
       if (ddvExists == true && pickedDate == true) {
         scheduleId = dropDownValue.id.toString();
-        reserveResponse = await ActionAPI.reserveAppointment(
+        reserveResponse = await AppointmentAPI.reserve(
             context,
             entity,
             entityId,

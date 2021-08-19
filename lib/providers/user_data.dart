@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api/actions.dart';
+import '../api/appointments.dart';
 import '../models/reservations.dart';
 
 class UserData with ChangeNotifier {
@@ -63,7 +63,7 @@ class UserData with ChangeNotifier {
     }
 
     token = userData['token'];
-    await ActionAPI.getUserAppointments(context);
+    await AppointmentAPI.getUserAppointments(context);
     login();
   }
 

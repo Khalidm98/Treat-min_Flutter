@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'auth_screen.dart';
 import 'info_screen.dart';
-import '../api/actions.dart';
+import '../api/appointments.dart';
 import '../localizations/app_localizations.dart';
 import '../providers/user_data.dart';
 import '../utils/enumerations.dart';
@@ -152,7 +152,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             : Entity.service,
                         appointmentId: current[index].id,
                         onCancel: () async {
-                          await ActionAPI.getUserAppointments(context);
+                          await AppointmentAPI.getUserAppointments(context);
                         },
                       );
                     },

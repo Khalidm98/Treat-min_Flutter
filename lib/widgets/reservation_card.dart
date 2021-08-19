@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'clickable_rating_hearts.dart';
-import '../api/actions.dart';
+import '../api/appointments.dart';
 import '../localizations/app_localizations.dart';
 import '../models/reservations.dart';
 import '../utils/enumerations.dart';
@@ -49,7 +49,7 @@ class _ReservationCardState extends State<ReservationCard> {
             actions: [
               TextButton(
                   onPressed: () async {
-                    await ActionAPI.cancelAppointment(context,
+                    await AppointmentAPI.cancel(context,
                         entityToString(widget.entity), widget.appointmentId);
                     widget.onCancel();
                     Navigator.pop(context);
@@ -123,7 +123,7 @@ class _ReservationCardState extends State<ReservationCard> {
                       ),
                     ),
                     onPressed: () async {
-                      await ActionAPI.rateAppointment(
+                      await AppointmentAPI.review(
                           context,
                           entityToString(widget.entity),
                           widget.entityId.toString(),
