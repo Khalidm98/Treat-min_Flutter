@@ -10,7 +10,7 @@ import '../utils/dialogs.dart';
 import '../utils/enumerations.dart';
 
 class EntityAPI {
-  static final String _baseURL = 'https://www.treat-min.com/api';
+  static const _baseURL = 'https://www.treat-min.com/api';
 
   static Future<void> getCities(BuildContext context) async {
     final response = await http.get('$_baseURL/cities/');

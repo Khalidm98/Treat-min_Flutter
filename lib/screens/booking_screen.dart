@@ -23,7 +23,7 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  static const Map<String, int> weekDays = {
+  static const Map<String, int> _weekDays = {
     'MON': DateTime.monday,
     'TUE': DateTime.tuesday,
     'WED': DateTime.wednesday,
@@ -43,9 +43,6 @@ class _BookingScreenState extends State<BookingScreen> {
   DateTime _date = DateTime(2000);
 
   bool expansionListChanger = false;
-  bool pickedDateCheck = true;
-  String reserveResponse;
-  String scheduleId;
 
   @override
   void initState() {
@@ -66,7 +63,7 @@ class _BookingScreenState extends State<BookingScreen> {
   DateTime _defineFirstDate() {
     final now = DateTime.now();
     final first =
-        now.add(Duration(days: weekDays[_schedule.day] - now.weekday));
+        now.add(Duration(days: _weekDays[_schedule.day] - now.weekday));
     if (first.isBefore(now)) {
       return first.add(Duration(days: 7));
     }
@@ -81,7 +78,7 @@ class _BookingScreenState extends State<BookingScreen> {
       firstDate: first,
       lastDate: first.add(Duration(days: 365)),
       selectableDayPredicate: (date) {
-        return date.weekday == weekDays[_schedule.day];
+        return date.weekday == _weekDays[_schedule.day];
       },
     );
 
@@ -91,7 +88,54 @@ class _BookingScreenState extends State<BookingScreen> {
       });
   }
 
-  void _bookFail() {
+  Future<void> _book() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      _mustLogin();
+      return;
+    }
+
+    if (_schedule == null || _date == null) {
+      setState(() {});
+      return;
+    }
+
+    final appointment = {
+      'schedule': _schedule.id,
+      'appointment_date': _date.toIso8601String().substring(0, 10)
+    };
+    final response = await AppointmentAPI.reserve(
+        context, _entity, _detail, appointment, _twice);
+    if (response) {
+      _bookSuccess();
+    }
+  }
+
+  void _mustLogin() {
+    showDialog(
+      context: context,
+      child: AlertDialog(
+        title: Text(t('must_log_in')),
+        actions: [
+          TextButton(
+            child: Text(t('cancel')),
+            onPressed: () => Navigator.pop(context),
+          ),
+          TextButton(
+            child: Text(t('log_in')),
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AuthScreen.routeName,
+                (route) => false,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _twice() {
     final theme = Theme.of(context);
     showDialog(
       context: context,
@@ -99,9 +143,7 @@ class _BookingScreenState extends State<BookingScreen> {
         return BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
+            onTap: () => Navigator.pop(context),
             child: AlertDialog(
               insetPadding: EdgeInsets.zero,
               backgroundColor: Colors.transparent,
@@ -113,9 +155,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     radius: 60,
                     child: Image.asset(
                       'assets/images/wrong_icon.png',
-                      fit: BoxFit.fitWidth,
                       width: 60,
-                      height: 60,
                     ),
                   ),
                   Padding(
@@ -124,7 +164,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       vertical: 20,
                     ),
                     child: Text(
-                      t("reserve_twice"),
+                      t('reserve_twice'),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.headline5
                           .copyWith(color: Colors.white),
@@ -141,7 +181,6 @@ class _BookingScreenState extends State<BookingScreen> {
 
   void _bookSuccess() {
     final theme = Theme.of(context);
-
     showDialog(
       context: context,
       builder: (_) {
@@ -150,10 +189,11 @@ class _BookingScreenState extends State<BookingScreen> {
           child: GestureDetector(
             onTap: () async {
               await AppointmentAPI.getUserAppointments(context);
-              Navigator.pop(context);
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  TabsScreen.routeName, (route) => false,
-                  arguments: 2);
+                TabsScreen.routeName,
+                (route) => false,
+                arguments: 2,
+              );
             },
             child: AlertDialog(
               insetPadding: EdgeInsets.zero,
@@ -166,7 +206,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     radius: 60,
                     child: Image.asset(
                       'assets/images/correct_icon.png',
-                      fit: BoxFit.fill,
+                      width: 60,
                     ),
                   ),
                   Padding(
@@ -188,52 +228,6 @@ class _BookingScreenState extends State<BookingScreen> {
         );
       },
     );
-  }
-
-  void checkToBook(String entity, String entityId, String detailId) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      showDialog(
-        context: context,
-        child: AlertDialog(
-          title: Text(t('must_log_in')),
-          actions: [
-            TextButton(
-              child: Text(t('cancel')),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              child: Text(t('log_in')),
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  AuthScreen.routeName,
-                  (route) => false,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-
-    if (_schedule == null || _date == null) {
-      setState(() {});
-      return;
-    }
-
-    scheduleId = _schedule.id.toString();
-    reserveResponse = await AppointmentAPI.reserve(context, entity, entityId,
-        detailId, scheduleId, _date.toString().substring(0, 10));
-    if (reserveResponse == "Your appointment was reserved successfully.") {
-      _bookSuccess();
-    } else if (reserveResponse ==
-        "User cannot reserve the same schedule twice in the same day!") {
-      _bookFail();
-    }
   }
 
   @override
@@ -353,16 +347,13 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             const SizedBox(height: 20),
             ElevatedButton(
+              onPressed: () async => await _book(),
               child: Text(t('book_now')),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
                   theme.accentColor,
                 ),
               ),
-              onPressed: () {
-                checkToBook(_entity is Clinic ? 'clinics' : 'services',
-                    _entity.id.toString(), _detail.id.toString());
-              },
             ),
             const SizedBox(height: 20),
             Container(

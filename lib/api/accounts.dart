@@ -11,17 +11,17 @@ import '../providers/user_data.dart';
 import '../utils/dialogs.dart';
 
 class AccountAPI {
-  static final String _baseURL = 'https://www.treat-min.com/api/accounts';
-  static final Map<String, String> _headers = {
+  static const _baseURL = 'https://www.treat-min.com/api/accounts';
+  static const _headers = {
     "content-type": "application/json",
     "accept": "application/json"
   };
 
-  static String token(BuildContext context) {
+  static String _token(BuildContext context) {
     return Provider.of<UserData>(context, listen: false).token;
   }
 
-  static void refreshToken(BuildContext context) async {
+  static void _refreshToken(BuildContext context) async {
     await Provider.of<UserData>(context, listen: false).refreshToken();
   }
 
@@ -145,7 +145,7 @@ class AccountAPI {
     loading(context);
     final response = await http.post(
       '$_baseURL/logout/',
-      headers: {"Authorization": "Token ${token(context)}"},
+      headers: {"Authorization": "Token ${_token(context)}"},
     );
     Navigator.pop(context);
 
@@ -153,7 +153,7 @@ class AccountAPI {
       await Provider.of<UserData>(context, listen: false).logOut();
       return true;
     } else if (response.statusCode == 401) {
-      alert(context, t('invalid_token'));
+      invalidToken(context);
     } else {
       somethingWentWrong(context);
     }
@@ -230,9 +230,9 @@ class AccountAPI {
     final response = await http.patch(
       '$_baseURL/change-password/',
       body: {"old": old, "password": password},
-      headers: {"Authorization": "Token ${token(context)}"},
+      headers: {"Authorization": "Token ${_token(context)}"},
     );
-    refreshToken(context);
+    _refreshToken(context);
     Navigator.pop(context);
 
     if (response.statusCode == 202) {
@@ -240,7 +240,7 @@ class AccountAPI {
     } else if (response.statusCode == 400) {
       alert(context, t('incorrect_password'));
     } else if (response.statusCode == 401) {
-      alert(context, t('invalid_token'));
+      invalidToken(context);
     } else {
       somethingWentWrong(context);
     }
@@ -252,16 +252,16 @@ class AccountAPI {
     final file = await http.MultipartFile.fromPath('photo', photo.path);
     final request =
         http.MultipartRequest('PATCH', Uri.parse('$_baseURL/change-photo/'));
-    request.headers["Authorization"] = "Token ${token(context)}";
+    request.headers["Authorization"] = "Token ${_token(context)}";
     request.files.add(file);
     final response = await request.send();
-    refreshToken(context);
+    _refreshToken(context);
     Navigator.pop(context);
 
     if (response.statusCode == 202) {
       return true;
     } else if (response.statusCode == 401) {
-      alert(context, t('invalid_token'));
+      invalidToken(context);
     } else {
       somethingWentWrong(context);
     }
@@ -274,15 +274,15 @@ class AccountAPI {
     final response = await http.patch(
       '$_baseURL/edit-account/',
       body: userData,
-      headers: {"Authorization": "Token ${token(context)}"},
+      headers: {"Authorization": "Token ${_token(context)}"},
     );
-    refreshToken(context);
+    _refreshToken(context);
     Navigator.pop(context);
 
     if (response.statusCode == 202) {
       final account = Provider.of<UserData>(context, listen: false);
       userData.remove('password');
-      userData['token'] = token(context);
+      userData['token'] = _token(context);
       userData['expiry'] = account.expiry.toIso8601String().substring(0, 10);
       userData['email'] = account.email;
       await account.saveData(userData);
@@ -290,7 +290,7 @@ class AccountAPI {
     } else if (response.statusCode == 400) {
       alert(context, t('incorrect_password'));
     } else if (response.statusCode == 401) {
-      alert(context, t('invalid_token'));
+      invalidToken(context);
     } else {
       somethingWentWrong(context);
     }

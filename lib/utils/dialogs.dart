@@ -62,6 +62,10 @@ void prompt(BuildContext context, String message,
   );
 }
 
+void invalidToken(BuildContext context) {
+  alert(context, t('invalid_token'));
+}
+
 void somethingWentWrong(BuildContext context) {
   alert(context, t('wrong'));
 }
