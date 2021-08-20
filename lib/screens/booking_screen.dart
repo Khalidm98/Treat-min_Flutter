@@ -11,7 +11,7 @@ import '../models/entity.dart';
 import '../models/review.dart';
 import '../models/schedule.dart';
 import '../widgets/background_image.dart';
-import '../widgets/book_now_dropdown_list.dart';
+import '../widgets/schedule_drop_down.dart';
 import '../widgets/rating_hearts.dart';
 import '../widgets/review_box.dart';
 
@@ -23,20 +23,29 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
+  static const Map<String, int> weekDays = {
+    'MON': DateTime.monday,
+    'TUE': DateTime.tuesday,
+    'WED': DateTime.wednesday,
+    'THU': DateTime.thursday,
+    'FRI': DateTime.friday,
+    'SAT': DateTime.saturday,
+    'SUN': DateTime.sunday
+  };
+
   var _entity;
   var _detail;
 
   List<Schedule> _schedules = [];
   List<Review> _reviews = [];
 
+  Schedule _schedule = Schedule();
+  DateTime _date = DateTime(2000);
+
   bool expansionListChanger = false;
-  bool ddvExists = true;
   bool pickedDateCheck = true;
-  bool pickedDate = false;
-  Schedule dropDownValue = Schedule();
   String reserveResponse;
   String scheduleId;
-  DateTime appointmentDate = DateTime.now();
 
   @override
   void initState() {
@@ -50,21 +59,40 @@ class _BookingScreenState extends State<BookingScreen> {
       list = await EntityAPI.getEntityReviews(context, _entity, _detail);
       list.forEach((json) => _reviews.add(Review.fromJson(json)));
       setState(() {});
+      Future.delayed(const Duration(seconds: 1), () => _schedule = null);
     });
   }
 
-  static const Map<int, String> weekDays = {
-    1: "MON",
-    2: "TUE",
-    3: "WED",
-    4: "THU",
-    5: "FRI",
-    6: "SAT",
-    7: "SUN"
-  };
+  DateTime _defineFirstDate() {
+    final now = DateTime.now();
+    final first =
+        now.add(Duration(days: weekDays[_schedule.day] - now.weekday));
+    if (first.isBefore(now)) {
+      return first.add(Duration(days: 7));
+    }
+    return first;
+  }
 
-  void _bookFail(ThemeData theme, BuildContext context) {
-    setAppLocalization(context);
+  Future<void> _selectDate(Schedule schedule) async {
+    final first = _defineFirstDate();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _date == null ? first : _date,
+      firstDate: first,
+      lastDate: first.add(Duration(days: 365)),
+      selectableDayPredicate: (date) {
+        return date.weekday == weekDays[_schedule.day];
+      },
+    );
+
+    if (picked != null)
+      setState(() {
+        _date = picked;
+      });
+  }
+
+  void _bookFail() {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (_) {
@@ -111,8 +139,9 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  void _bookSuccess(ThemeData theme, BuildContext context) {
-    setAppLocalization(context);
+  void _bookSuccess() {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (_) {
@@ -161,81 +190,7 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  int getDayNumber(Schedule dropDownValue) {
-    if (dropDownValue.day == "MON") {
-      return 1;
-    }
-    if (dropDownValue.day == "TUE") {
-      return 2;
-    }
-    if (dropDownValue.day == "WED") {
-      return 3;
-    }
-    if (dropDownValue.day == "THU") {
-      return 4;
-    }
-    if (dropDownValue.day == "FRI") {
-      return 5;
-    }
-    if (dropDownValue.day == "SAT") {
-      return 6;
-    }
-    return 7;
-  }
-
-  int daysToAdd(int todayIndex, int targetIndex) {
-    if (todayIndex < targetIndex) {
-      // jump to target day in same week
-      return targetIndex - todayIndex;
-    } else if (todayIndex > targetIndex) {
-      // must jump to next week
-      return 7 + targetIndex - todayIndex;
-    } else {
-      return 0; // date is matched
-    }
-  }
-
-  DateTime defineInitialDate() {
-    DateTime now = DateTime.now();
-    int dayOffset = daysToAdd(now.weekday, getDayNumber(dropDownValue));
-    return now.add(Duration(days: dayOffset));
-  }
-
-  bool defineSelectable(DateTime val) {
-    DateTime now = DateTime.now();
-    if (val.isBefore(now)) {
-      return false;
-    }
-
-    if (weekDays[val.weekday] == dropDownValue.day) {
-      return true;
-    }
-    return false;
-  }
-
-  Future<void> _selectDate(BuildContext context, Schedule ddv) async {
-    final DateTime picked = await showDatePicker(
-        selectableDayPredicate: defineSelectable,
-        context: context,
-        initialDate: defineInitialDate(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(const Duration(days: 365)));
-    if (picked != null)
-      setState(() {
-        pickedDate = true;
-        appointmentDate = picked;
-      });
-  }
-
-  void updateDropDownValue(Schedule dpv) {
-    dropDownValue = dpv;
-    if (dropDownValue.start != null) {
-      ddvExists = true;
-    }
-  }
-
-  void checkToBook(String entity, String entityId, String detailId,
-      ThemeData theme, BuildContext context) async {
+  void checkToBook(String entity, String entityId, String detailId) async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       showDialog(
@@ -262,41 +217,22 @@ class _BookingScreenState extends State<BookingScreen> {
           ],
         ),
       );
-    } else {
-      if (dropDownValue.start == null) {
-        setState(() {
-          ddvExists = false;
-        });
-      } else {
-        setState(() {
-          ddvExists = true;
-        });
-        if (pickedDate == true) {
-          setState(() {
-            pickedDateCheck = true;
-          });
-        } else {
-          setState(() {
-            pickedDateCheck = false;
-          });
-        }
-      }
-      if (ddvExists == true && pickedDate == true) {
-        scheduleId = dropDownValue.id.toString();
-        reserveResponse = await AppointmentAPI.reserve(
-            context,
-            entity,
-            entityId,
-            detailId,
-            scheduleId,
-            appointmentDate.toString().substring(0, 10));
-        if (reserveResponse == "Your appointment was reserved successfully.") {
-          _bookSuccess(theme, context);
-        } else if (reserveResponse ==
-            "User cannot reserve the same schedule twice in the same day!") {
-          _bookFail(theme, context);
-        }
-      }
+      return;
+    }
+
+    if (_schedule == null || _date == null) {
+      setState(() {});
+      return;
+    }
+
+    scheduleId = _schedule.id.toString();
+    reserveResponse = await AppointmentAPI.reserve(context, entity, entityId,
+        detailId, scheduleId, _date.toString().substring(0, 10));
+    if (reserveResponse == "Your appointment was reserved successfully.") {
+      _bookSuccess();
+    } else if (reserveResponse ==
+        "User cannot reserve the same schedule twice in the same day!") {
+      _bookFail();
     }
   }
 
@@ -369,60 +305,50 @@ class _BookingScreenState extends State<BookingScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            Container(
-              child: BookNowDropDownList(
-                dropDownValueGetter: updateDropDownValue,
-                scheduleList: _schedules,
-              ),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: theme.accentColor),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              child: ScheduleDropDown(
+                schedules: _schedules,
+                updateValue: (schedule) {
+                  _schedule = schedule;
+                  _date = null;
+                },
               ),
             ),
-            if (!ddvExists)
+            Divider(height: 1, thickness: 1),
+            if (_schedule == null)
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(
                   t('schedule_error'),
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: theme.errorColor),
                 ),
               ),
             const SizedBox(height: 10),
-            Container(
-                child: ListTile(
-                  leading: Text(
-                    !pickedDate
-                        ? t("choose_appointment")
-                        : appointmentDate.toString().substring(0, 10),
-                    style: theme.textTheme.headline6.copyWith(fontSize: 16),
-                  ),
-                  trailing: Icon(
-                    Icons.date_range,
-                    size: 30,
-                    color: theme.primaryColor,
-                  ),
-                  onTap: () async {
-                    if (dropDownValue.day != null) {
-                      await _selectDate(context, dropDownValue);
-                    } else {
-                      setState(() {
-                        ddvExists = false;
-                      });
-                    }
-                  },
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: theme.accentColor),
-                  ),
-                )),
-            if (!pickedDateCheck)
+            ListTile(
+              title: Text(
+                _date == null || _date == DateTime(2000)
+                    ? t('choose_date')
+                    : _date.toString().substring(0, 10),
+                style: theme.textTheme.subtitle2,
+              ),
+              trailing:
+                  Icon(Icons.date_range, color: theme.primaryColor, size: 30),
+              onTap: () async {
+                if (_schedule == null) {
+                  setState(() {});
+                } else {
+                  await _selectDate(_schedule);
+                }
+              },
+            ),
+            Divider(height: 1, thickness: 1),
+            if (_date == null)
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Text(
                   t('date_error'),
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: theme.errorColor),
                 ),
               ),
             const SizedBox(height: 20),
@@ -434,12 +360,8 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
               ),
               onPressed: () {
-                checkToBook(
-                    _entity is Clinic ? 'clinics' : 'services',
-                    _entity.id.toString(),
-                    _detail.id.toString(),
-                    theme,
-                    context);
+                checkToBook(_entity is Clinic ? 'clinics' : 'services',
+                    _entity.id.toString(), _detail.id.toString());
               },
             ),
             const SizedBox(height: 20),
