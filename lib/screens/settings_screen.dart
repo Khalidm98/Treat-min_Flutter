@@ -89,6 +89,9 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(AboutScreen.routeName);
                 },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 tileColor: Colors.grey[300],
                 title: Text(t('about_us'), style: theme.textTheme.headline6),
                 trailing: Stack(
@@ -110,6 +113,9 @@ class SettingsScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(ContactScreen.routeName);
                 },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 tileColor: Colors.grey[300],
                 title: Text(t('contact_us'), style: theme.textTheme.headline6),
                 trailing: Stack(
@@ -135,6 +141,9 @@ class SettingsScreen extends StatelessWidget {
                         Navigator.of(context)
                             .pushReplacementNamed(AuthScreen.routeName);
                       },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 tileColor: Colors.grey[300],
                 title: Text(
                   t(isLoggedIn ? 'log_out' : 'log_in'),

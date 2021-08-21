@@ -409,8 +409,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
               ),
               if (_filterOn)
                 Container(
-                  margin:
-                      const EdgeInsets.only(bottom: 15, left: 15, right: 15),
+                  margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -591,8 +590,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                 ),
               if (_searchOn)
                 Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 15, left: 15, right: 15),
+                  padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
                   child: SearchField(
                     controller: _controller,
                     onChanged: _search,

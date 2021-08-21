@@ -13,7 +13,7 @@ import '../models/schedule.dart';
 import '../widgets/background_image.dart';
 import '../widgets/schedule_drop_down.dart';
 import '../widgets/rating_hearts.dart';
-import '../widgets/review_box.dart';
+import '../widgets/review_card.dart';
 
 class BookingScreen extends StatefulWidget {
   static const routeName = '/booking';
@@ -39,10 +39,10 @@ class _BookingScreenState extends State<BookingScreen> {
   List<Schedule> _schedules = [];
   List<Review> _reviews = [];
 
-  Schedule _schedule = Schedule();
+  Schedule _schedule = Schedule(id: -1);
   DateTime _date = DateTime(2000);
 
-  bool expansionListChanger = false;
+  bool _showReviews = false;
 
   @override
   void initState() {
@@ -56,7 +56,6 @@ class _BookingScreenState extends State<BookingScreen> {
       list = await EntityAPI.getEntityReviews(context, _entity, _detail);
       list.forEach((json) => _reviews.add(Review.fromJson(json)));
       setState(() {});
-      Future.delayed(const Duration(seconds: 1), () => _schedule = null);
     });
   }
 
@@ -74,7 +73,7 @@ class _BookingScreenState extends State<BookingScreen> {
     final first = _defineFirstDate();
     final picked = await showDatePicker(
       context: context,
-      initialDate: _date == null ? first : _date,
+      initialDate: _date == null || _date == DateTime(2000) ? first : _date,
       firstDate: first,
       lastDate: first.add(Duration(days: 365)),
       selectableDayPredicate: (date) {
@@ -95,8 +94,11 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    if (_schedule == null || _date == null) {
-      setState(() {});
+    if (_schedule == null || _schedule.id == -1) {
+      setState(() => _schedule = null);
+      return;
+    } else if (_date == null || _date == DateTime(2000)) {
+      setState(() => _date = null);
       return;
     }
 
@@ -304,8 +306,7 @@ class _BookingScreenState extends State<BookingScreen> {
               child: ScheduleDropDown(
                 schedules: _schedules,
                 updateValue: (schedule) {
-                  _schedule = schedule;
-                  _date = null;
+                  setState(() => _schedule = schedule);
                 },
               ),
             ),
@@ -329,8 +330,8 @@ class _BookingScreenState extends State<BookingScreen> {
               trailing:
                   Icon(Icons.date_range, color: theme.primaryColor, size: 30),
               onTap: () async {
-                if (_schedule == null) {
-                  setState(() {});
+                if (_schedule == null || _schedule.id == -1) {
+                  setState(() => _schedule = null);
                 } else {
                   await _selectDate(_schedule);
                 }
@@ -358,38 +359,40 @@ class _BookingScreenState extends State<BookingScreen> {
             const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
-                color: !expansionListChanger
-                    ? theme.primaryColorLight
-                    : Colors.white,
+                color: theme.primaryColorLight,
                 borderRadius: BorderRadius.all(Radius.circular(5)),
               ),
               child: ExpansionTile(
-                onExpansionChanged: (bool) {
+                onExpansionChanged: (boolean) {
                   setState(() {
-                    expansionListChanger = bool;
+                    _showReviews = boolean;
                   });
                 },
-                title: Text(
-                  t(expansionListChanger ? 'hide_reviews' : 'view_reviews'),
-                ),
-                children: [
-                  _reviews.length != 0
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          itemCount: _reviews.length,
-                          itemBuilder: (_, index) {
-                            return ReviewBox(_reviews[index]);
-                          })
-                      : ListTile(
-                          trailing:
-                              Icon(Icons.rate_review, color: theme.accentColor),
+                backgroundColor: theme.primaryColorLight,
+                childrenPadding: _reviews.isEmpty
+                    ? const EdgeInsets.all(0)
+                    : const EdgeInsets.symmetric(horizontal: 10),
+                title: Text(t(_showReviews ? 'hide_reviews' : 'view_reviews')),
+                children: _reviews.isEmpty
+                    ? [
+                        ListTile(
+                          dense: true,
                           title: Text(
                             t('no_current_reviews'),
                             style: theme.textTheme.subtitle2,
                           ),
-                        ),
-                ],
+                          trailing: Icon(
+                            Icons.rate_review,
+                            color: theme.accentColor,
+                          ),
+                        )
+                      ]
+                    : _reviews.map((review) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: ReviewCard(review),
+                        );
+                      }).toList(),
               ),
             )
           ],

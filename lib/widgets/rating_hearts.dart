@@ -10,17 +10,16 @@ class RatingHearts extends StatelessWidget {
   Widget build(BuildContext context) {
     final list = <Widget>[];
     for (int i = 0; i < 5; i++) {
-      list.add(Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Image.asset(
-          i < rating
-              ? 'assets/icons/rate_filled.png'
-              : 'assets/icons/rate_outlined.png',
-          height: size,
-          width: size,
-        ),
+      list.add(Image.asset(
+        i < rating
+            ? 'assets/icons/rate_filled.png'
+            : 'assets/icons/rate_outlined.png',
+        height: size,
+        width: size,
       ));
+      list.add(SizedBox(width: size / 5));
     }
+    list.removeLast();
 
     return Row(
       mainAxisSize: MainAxisSize.min,
