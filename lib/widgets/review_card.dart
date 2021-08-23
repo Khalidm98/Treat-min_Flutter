@@ -41,7 +41,11 @@ class ReviewCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(review.date),
-                RatingHearts(rating: int.parse(review.rating), size: 15),
+                RatingHearts(
+                  size: 15,
+                  active: false,
+                  rating: int.parse(review.rating),
+                ),
               ],
             ),
           ),

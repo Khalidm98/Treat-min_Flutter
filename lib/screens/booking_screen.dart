@@ -290,6 +290,7 @@ class _BookingScreenState extends State<BookingScreen> {
             Center(
               child: RatingHearts(
                 size: 25,
+                active: false,
                 rating: _detail.ratingUsers == 0
                     ? 0
                     : _detail.ratingTotal ~/ _detail.ratingUsers,

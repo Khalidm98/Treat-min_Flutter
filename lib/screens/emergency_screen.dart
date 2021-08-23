@@ -110,8 +110,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                       hospital.rating == null
                           ? const SizedBox()
                           : RatingHearts(
-                              rating: (hospital.rating).round(),
                               size: 20,
+                              active: false,
+                              rating: (hospital.rating).round(),
                             ),
                       hospital.openingHours == null
                           ? const SizedBox()

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../models/entity.dart';
 import '../models/entity_details.dart';
+import '../models/review.dart';
 import '../providers/user_data.dart';
 import '../utils/dialogs.dart';
 
@@ -64,7 +65,7 @@ class AppointmentAPI {
 
     if (response.statusCode == 200) {
       Provider.of<UserData>(context, listen: false)
-          .setAppointments(utf8.decode(response.bodyBytes));
+          .setAppointments(json.decode(utf8.decode(response.bodyBytes)));
       return true;
     } else if (response.statusCode == 401) {
       invalidToken(context);
@@ -74,35 +75,44 @@ class AppointmentAPI {
     return false;
   }
 
-  static Future cancel(
+  static Future<bool> cancel(
       BuildContext context, String entity, int appointmentId) async {
+    loading(context);
     final response = await http.delete(
       '$_baseURL/user/appointments/$entity/$appointmentId/cancel/',
       headers: _headers(context),
     );
+    Navigator.pop(context);
     _refreshToken(context);
 
-    if (response.statusCode == 401) {
-      return "Invalid Token";
-    }
     if (response.statusCode == 200) {
-      return response.body;
+      return true;
+    } else if (response.statusCode == 401) {
+      invalidToken(context);
+    } else {
+      somethingWentWrong(context);
     }
-    return "Something went wrong";
+    return false;
   }
 
-  static Future review(BuildContext context, String entity, String entityId,
-      String entityDetailId, String rating, String review) async {
+  static Future<bool> review(BuildContext context, String entity,
+      int appointmentId, Review review) async {
+    loading(context);
     final response = await http.post(
-      '$_baseURL/$entity/$entityId/details/$entityDetailId/rate/',
+      '$_baseURL/user/appointments/$entity/$appointmentId/review/',
       headers: _headers(context),
-      body: json.encode({"rating": rating, "review": review}),
+      body: json.encode({"rating": review.rating, "review": review.review}),
     );
+    Navigator.pop(context);
     _refreshToken(context);
-    Map<String, dynamic> jsonResponse = json.decode(response.body);
-    if (response.statusCode == 401) {
-      return "Invalid Token";
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 401) {
+      invalidToken(context);
+    } else {
+      somethingWentWrong(context);
     }
-    return jsonResponse["details"];
+    return false;
   }
 }

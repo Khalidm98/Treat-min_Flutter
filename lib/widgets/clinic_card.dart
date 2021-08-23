@@ -100,6 +100,7 @@ class ClinicCard extends StatelessWidget {
                         ),
                         RatingHearts(
                           size: 15,
+                          active: false,
                           rating: detail.ratingUsers != 0
                               ? (detail.ratingTotal ~/ detail.ratingUsers)
                               : 0,

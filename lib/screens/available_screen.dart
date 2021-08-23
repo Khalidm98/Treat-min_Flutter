@@ -284,7 +284,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
       );
     }
 
-    if (_details.length == 0) {
+    if (_details.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text(entity.name)),
         body: Column(
@@ -482,7 +482,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                 //isExpanded: true,
                                 value: _area,
                                 hint: Text(
-                                  _areas.length == 0 ? t('none') : t('all'),
+                                  _areas.isEmpty ? t('none') : t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 onChanged: (newValue) {
@@ -526,7 +526,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                 // isExpanded: true,
                                 value: _hospital,
                                 hint: Text(
-                                  _hospitals.length == 0 ? t('none') : t('all'),
+                                  _hospitals.isEmpty ? t('none') : t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
                                 onChanged: (newValue) {

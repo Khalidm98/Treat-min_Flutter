@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/appointments.dart';
-import '../models/reservations.dart';
+import '../models/appointment.dart';
 
 class UserData with ChangeNotifier {
   bool isLoggedIn = false;
@@ -21,13 +21,24 @@ class UserData with ChangeNotifier {
   DateTime birth;
 
   // User Appointments
-  List<ReservedEntityDetails> current;
-  List<ReservedEntityDetails> past;
+  List<Appointment> current;
+  List<Appointment> past;
 
-  void setAppointments(String jsonData) {
-    final appointments = reservationsFromJson(jsonData);
-    current = appointments.current.clinics + appointments.current.services;
-    past = appointments.past.clinics + appointments.past.services;
+  void setAppointments(Map<String, dynamic> jsonData) {
+    current = jsonData['current']['clinics'].map<Appointment>((json) {
+      return Appointment.fromJson(json);
+    }).toList();
+    current += jsonData['current']['services'].map<Appointment>((json) {
+      return Appointment.fromJson(json);
+    }).toList();
+
+    past = jsonData['past']['clinics'].map<Appointment>((json) {
+      return Appointment.fromJson(json);
+    }).toList();
+    past += jsonData['past']['services'].map<Appointment>((json) {
+      return Appointment.fromJson(json);
+    }).toList();
+
     notifyListeners();
   }
 
