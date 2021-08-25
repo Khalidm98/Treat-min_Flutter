@@ -42,7 +42,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
             if (response) {
               await showDialog(
                 context: context,
-                child: AlertDialog(
+                builder: (_) => AlertDialog(
                   title: Text(t('resend_success')),
                   actions: [
                     TextButton(
@@ -166,7 +166,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     setAppLocalization(context);
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: BackgroundImage(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,

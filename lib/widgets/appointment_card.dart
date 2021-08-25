@@ -203,41 +203,43 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                ListTile(
-                  dense: true,
-                  tileColor: Colors.white,
-                  title: widget.appointment.doctor == null
-                      ? Text(_translateEntity())
-                      : Text(widget.appointment.doctor),
-                  subtitle: widget.appointment.doctor == null
-                      ? null
-                      : Text(_translateEntity()),
-                  trailing: widget.isCurrent
-                      ? OutlinedButton(
-                          onPressed: _cancel,
-                          child: Text(t('cancel')),
-                        )
-                      : widget.appointment.status == "A"
-                          ? OutlinedButton(
-                              style: theme.outlinedButtonTheme.style.copyWith(
-                                side: MaterialStateProperty.all<BorderSide>(
-                                  BorderSide(color: theme.primaryColor),
+                DecoratedBox(
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: ListTile(
+                    dense: true,
+                    title: widget.appointment.doctor == null
+                        ? Text(_translateEntity())
+                        : Text(widget.appointment.doctor),
+                    subtitle: widget.appointment.doctor == null
+                        ? null
+                        : Text(_translateEntity()),
+                    trailing: widget.isCurrent
+                        ? OutlinedButton(
+                            onPressed: _cancel,
+                            child: Text(t('cancel')),
+                          )
+                        : widget.appointment.status == "A"
+                            ? OutlinedButton(
+                                style: theme.outlinedButtonTheme.style.copyWith(
+                                  side: MaterialStateProperty.all<BorderSide>(
+                                    BorderSide(color: theme.primaryColor),
+                                  ),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                    theme.primaryColor.withOpacity(0.2),
+                                  ),
+                                  overlayColor: MaterialStateProperty.all<Color>(
+                                    theme.primaryColor.withOpacity(0.4),
+                                  ),
+                                  foregroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          theme.primaryColor),
                                 ),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                  theme.primaryColor.withOpacity(0.2),
-                                ),
-                                overlayColor: MaterialStateProperty.all<Color>(
-                                  theme.primaryColor.withOpacity(0.4),
-                                ),
-                                foregroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        theme.primaryColor),
-                              ),
-                              onPressed: _review,
-                              child: Text(t('rate')),
-                            )
-                          : const SizedBox(),
+                                onPressed: _review,
+                                child: Text(t('rate')),
+                              )
+                            : const SizedBox(),
+                  ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 5),

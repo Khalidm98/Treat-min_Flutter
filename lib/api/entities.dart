@@ -13,7 +13,7 @@ class EntityAPI {
   static const _baseURL = 'https://www.treat-min.com/api';
 
   static Future<void> getCities(BuildContext context) async {
-    final response = await http.get('$_baseURL/cities/');
+    final response = await http.get(Uri.parse('$_baseURL/cities/'));
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setCities(
         json.decode(utf8.decode(response.bodyBytes))['cities'],
@@ -24,7 +24,7 @@ class EntityAPI {
   }
 
   static Future<void> getAreas(BuildContext context) async {
-    final response = await http.get('$_baseURL/areas/');
+    final response = await http.get(Uri.parse('$_baseURL/areas/'));
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setAreas(
         json.decode(utf8.decode(response.bodyBytes))['areas'],
@@ -35,7 +35,7 @@ class EntityAPI {
   }
 
   static Future<void> getHospitals(BuildContext context) async {
-    final response = await http.get('$_baseURL/hospitals/');
+    final response = await http.get(Uri.parse('$_baseURL/hospitals/'));
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setHospitals(
         json.decode(utf8.decode(response.bodyBytes))['hospitals'],
@@ -46,7 +46,8 @@ class EntityAPI {
   }
 
   static Future<void> getEntities(BuildContext context, Entity entity) async {
-    final response = await http.get('$_baseURL/${entityToString(entity)}/');
+    final response =
+        await http.get(Uri.parse('$_baseURL/${entityToString(entity)}/'));
     if (response.statusCode == 200) {
       Provider.of<AppData>(context, listen: false).setEntities(
         entity,
@@ -60,7 +61,7 @@ class EntityAPI {
   static Future<List> getEntityDetails(
       BuildContext context, NamedEntity entity) async {
     final response = await http.get(
-      '$_baseURL/${entity.toString()}/details/',
+      Uri.parse('$_baseURL/${entity.toString()}/details/'),
     );
 
     if (response.statusCode == 200) {
@@ -74,7 +75,8 @@ class EntityAPI {
   static Future<List> getEntitySchedules(
       BuildContext context, NamedEntity entity, Detail detail) async {
     final response = await http.get(
-      '$_baseURL/${entity.toString()}/${detail.toString()}/schedules/',
+      Uri.parse(
+          '$_baseURL/${entity.toString()}/${detail.toString()}/schedules/'),
     );
 
     if (response.statusCode == 200) {
@@ -88,7 +90,7 @@ class EntityAPI {
   static Future<List> getEntityReviews(
       BuildContext context, NamedEntity entity, Detail detail) async {
     final response = await http.get(
-      '$_baseURL/${entity.toString()}/${detail.toString()}/reviews/',
+      Uri.parse('$_baseURL/${entity.toString()}/${detail.toString()}/reviews/'),
     );
 
     if (response.statusCode == 200) {

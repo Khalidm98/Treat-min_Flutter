@@ -107,7 +107,7 @@ class _AuthScreenState extends State<AuthScreen>
     prompt(context, t('forgot_password_message'), onYes: () {
       showDialog(
         context: context,
-        child: AlertDialog(
+        builder: (_) => AlertDialog(
           title: Text(t('email')),
           content: TextField(controller: _forgetController),
           actions: [
@@ -153,7 +153,7 @@ class _AuthScreenState extends State<AuthScreen>
     setAppLocalization(context);
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: BackgroundImage(
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,

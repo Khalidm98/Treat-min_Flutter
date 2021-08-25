@@ -59,7 +59,7 @@ class _InfoScreenState extends State<InfoScreen> {
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final theme = Theme.of(context);
       final file = await ImageCropper.cropImage(
@@ -130,7 +130,7 @@ class _InfoScreenState extends State<InfoScreen> {
     if (isLoggedIn) {
       await showDialog(
         context: context,
-        child: AlertDialog(
+        builder: (_) => AlertDialog(
           title: Text(t('current_password')),
           content: TextField(controller: _passController, obscureText: true),
           actions: [

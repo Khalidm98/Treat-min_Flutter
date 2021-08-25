@@ -37,7 +37,7 @@ class AppointmentAPI {
   ) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/${entity.toString()}/${detail.toString()}/reserve/',
+      Uri.parse('$_baseURL/${entity.toString()}/${detail.toString()}/reserve/'),
       headers: _headers(context),
       body: json.encode(appointment),
     );
@@ -58,7 +58,7 @@ class AppointmentAPI {
 
   static Future<bool> getUserAppointments(BuildContext context) async {
     final response = await http.get(
-      '$_baseURL/user/appointments/',
+      Uri.parse('$_baseURL/user/appointments/'),
       headers: _headers(context),
     );
     _refreshToken(context);
@@ -79,7 +79,7 @@ class AppointmentAPI {
       BuildContext context, String entity, int appointmentId) async {
     loading(context);
     final response = await http.delete(
-      '$_baseURL/user/appointments/$entity/$appointmentId/cancel/',
+      Uri.parse('$_baseURL/user/appointments/$entity/$appointmentId/cancel/'),
       headers: _headers(context),
     );
     Navigator.pop(context);
@@ -99,7 +99,7 @@ class AppointmentAPI {
       int appointmentId, Review review) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/user/appointments/$entity/$appointmentId/review/',
+      Uri.parse('$_baseURL/user/appointments/$entity/$appointmentId/review/'),
       headers: _headers(context),
       body: json.encode({"rating": review.rating, "review": review.review}),
     );

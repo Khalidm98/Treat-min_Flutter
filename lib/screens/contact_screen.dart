@@ -7,10 +7,10 @@ import '../widgets/background_image.dart';
 class ContactScreen extends StatelessWidget {
   static const routeName = '/contact-us';
 
-  static const treatMinEmail = 'noreply@treat-min.com';
-  static const khalidEmail = 'khalid.refaat98@gmail.com';
-  static const ahmedEmail = 'ahmedkhaled11119999@gmail.com';
-  static const facebookPage = 'https://www.facebook.com/Treatmin';
+  static const _treatMinEmail = 'noreply@treat-min.com';
+  static const _khalidEmail = 'khalid.refaat98@gmail.com';
+  static const _ahmedEmail = 'ahmedkhaled11119999@gmail.com';
+  static const _facebookPage = 'https://www.facebook.com/Treatmin';
 
   void _launchEmail(String email) async {
     await launch('mailto:$email');
@@ -31,46 +31,52 @@ class ContactScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
                   color: Colors.indigo[600],
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   leading: Image.asset(
                     'assets/icons/facebook.png',
                     height: 35,
-                    width: 40,
+                    width: 35,
                   ),
                   title: Text(
                     t('visit_us'),
                     style: const TextStyle(color: Colors.white),
                   ),
-                  onTap: () => launch(facebookPage),
+                  onTap: () => launch(_facebookPage),
                 ),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
                   color: Colors.cyan[500],
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   leading: const Icon(Icons.alternate_email, size: 40),
                   title: Text(
                     t('send_us_email'),
                     style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
-                    treatMinEmail,
+                    _treatMinEmail,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  onTap: () => _launchEmail(treatMinEmail),
+                  onTap: () => _launchEmail(_treatMinEmail),
                 ),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
                   color: Colors.grey,
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
                   leading: Image.asset(
@@ -93,22 +99,25 @@ class ContactScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
                   color: theme.primaryColor,
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   leading: Image.asset('assets/images/ahmed.png'),
                   title: Text(
                     t('ahmed_name'),
                     style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
-                    ahmedEmail,
+                    _ahmedEmail,
                     style: theme.textTheme.subtitle1
                         .copyWith(fontSize: 11, color: Colors.white),
                   ),
-                  onTap: () => _launchEmail(ahmedEmail),
+                  onTap: () => _launchEmail(_ahmedEmail),
                 ),
               ),
               Container(
@@ -119,17 +128,20 @@ class ContactScreen extends StatelessWidget {
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   leading: Image.asset('assets/images/khalid.png'),
                   title: Text(
                     t('khalid_name'),
                     style: const TextStyle(color: Colors.white),
                   ),
                   subtitle: Text(
-                    khalidEmail,
+                    _khalidEmail,
                     style: theme.textTheme.subtitle1
                         .copyWith(fontSize: 11, color: Colors.white),
                   ),
-                  onTap: () => _launchEmail(khalidEmail),
+                  onTap: () => _launchEmail(_khalidEmail),
                 ),
               ),
             ],

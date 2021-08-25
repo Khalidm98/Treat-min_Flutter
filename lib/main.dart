@@ -164,7 +164,6 @@ class _MyAppState extends State<MyApp> {
             selectionColor: greenLight,
             selectionHandleColor: greenLight,
           ),
-          useTextSelectionTheme: true,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: SplashScreen(),

@@ -116,7 +116,7 @@ class _BookingScreenState extends State<BookingScreen> {
   void _mustLogin() {
     showDialog(
       context: context,
-      child: AlertDialog(
+      builder: (_) => AlertDialog(
         title: Text(t('must_log_in')),
         actions: [
           TextButton(
@@ -358,18 +358,18 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.primaryColorLight,
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-              ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
               child: ExpansionTile(
                 onExpansionChanged: (boolean) {
                   setState(() {
                     _showReviews = boolean;
                   });
                 },
+                iconColor: Colors.black,
+                textColor: Colors.black,
                 backgroundColor: theme.primaryColorLight,
+                collapsedBackgroundColor: theme.primaryColorLight,
                 childrenPadding: _reviews.isEmpty
                     ? const EdgeInsets.all(0)
                     : const EdgeInsets.symmetric(horizontal: 10),

@@ -36,18 +36,21 @@ class SettingsScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(15),
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: ListTile(
-                tileColor: Colors.grey[300],
                 title: Text(t('language'), style: theme.textTheme.headline6),
                 trailing: ToggleSwitch(
+                  totalSwitches: 2,
                   labels: [t('english'), t('arabic')],
                   minWidth: 80,
                   minHeight: 30,
-                  cornerRadius: 10,
+                  radiusStyle: true,
                   initialLabelIndex: appData.language == 'en' ? 0 : 1,
-                  activeBgColor: theme.primaryColorLight,
+                  activeBgColor: [theme.primaryColorLight, theme.primaryColor],
                   inactiveBgColor: Colors.white,
                   onToggle: (index) {
                     final lang = index == 0 ? 'en' : 'ar';
@@ -83,8 +86,11 @@ class SettingsScreen extends StatelessWidget {
             //   ),
             // ),
             // const SizedBox(height: 15),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: ListTile(
                 onTap: () {
                   Navigator.of(context).pushNamed(AboutScreen.routeName);
@@ -107,8 +113,11 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: ListTile(
                 onTap: () {
                   Navigator.of(context).pushNamed(ContactScreen.routeName);
@@ -132,8 +141,11 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: ListTile(
                 onTap: isLoggedIn
                     ? () => _logOut(context)

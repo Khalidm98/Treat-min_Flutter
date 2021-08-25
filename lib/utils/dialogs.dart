@@ -5,7 +5,7 @@ void loading(BuildContext context) {
   showDialog(
     context: context,
     barrierDismissible: false,
-    child: WillPopScope(
+    builder: (_) => WillPopScope(
       onWillPop: () => Future.value(false),
       child: AlertDialog(title: Center(child: CircularProgressIndicator())),
     ),
@@ -15,7 +15,7 @@ void loading(BuildContext context) {
 void alert(BuildContext context, String message, {void Function() onOk}) {
   showDialog(
     context: context,
-    child: AlertDialog(
+    builder: (_) => AlertDialog(
       title: Text(message),
       actions: [
         TextButton(
@@ -36,7 +36,7 @@ void prompt(BuildContext context, String message,
     {void Function() onYes, void Function() onNo}) {
   showDialog(
     context: context,
-    child: AlertDialog(
+    builder: (_) => AlertDialog(
       title: Text(message),
       actions: [
         TextButton(

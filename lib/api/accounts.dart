@@ -28,7 +28,7 @@ class AccountAPI {
   static Future<bool> registerEmail(BuildContext context, String email) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/register-email/',
+      Uri.parse('$_baseURL/register-email/'),
       body: {"email": email},
     );
     Navigator.pop(context);
@@ -52,7 +52,7 @@ class AccountAPI {
       BuildContext context, String email, int code) async {
     loading(context);
     final response = await http.patch(
-      '$_baseURL/register-code/',
+      Uri.parse('$_baseURL/register-code/'),
       headers: _headers,
       body: json.encode({"email": email, "code": code}),
     );
@@ -74,7 +74,7 @@ class AccountAPI {
       BuildContext context, Map<String, String> userData) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/register/',
+      Uri.parse('$_baseURL/register/'),
       body: userData,
     );
     Navigator.pop(context);
@@ -100,7 +100,7 @@ class AccountAPI {
       BuildContext context, Map<String, String> userData) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/login/',
+      Uri.parse('$_baseURL/login/'),
       body: userData,
     );
     Navigator.pop(context);
@@ -144,7 +144,7 @@ class AccountAPI {
   static Future<bool> logout(BuildContext context) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/logout/',
+      Uri.parse('$_baseURL/logout/'),
       headers: {"Authorization": "Token ${_token(context)}"},
     );
     Navigator.pop(context);
@@ -163,7 +163,7 @@ class AccountAPI {
   static Future<bool> passwordEmail(BuildContext context, String email) async {
     loading(context);
     final response = await http.post(
-      '$_baseURL/password-email/',
+      Uri.parse('$_baseURL/password-email/'),
       body: {"email": email},
     );
     Navigator.pop(context);
@@ -184,7 +184,7 @@ class AccountAPI {
       BuildContext context, String email, int code) async {
     loading(context);
     final response = await http.patch(
-      '$_baseURL/password-code/',
+      Uri.parse('$_baseURL/password-code/'),
       headers: _headers,
       body: json.encode({"email": email, "code": code}),
     );
@@ -206,7 +206,7 @@ class AccountAPI {
       BuildContext context, String email, String password) async {
     loading(context);
     final response = await http.patch(
-      '$_baseURL/password-reset/',
+      Uri.parse('$_baseURL/password-reset/'),
       body: {"email": email, "password": password},
     );
     Navigator.pop(context);
@@ -228,7 +228,7 @@ class AccountAPI {
       BuildContext context, String old, String password) async {
     loading(context);
     final response = await http.patch(
-      '$_baseURL/change-password/',
+      Uri.parse('$_baseURL/change-password/'),
       body: {"old": old, "password": password},
       headers: {"Authorization": "Token ${_token(context)}"},
     );
@@ -272,7 +272,7 @@ class AccountAPI {
       BuildContext context, Map<String, String> userData) async {
     loading(context);
     final response = await http.patch(
-      '$_baseURL/edit-account/',
+      Uri.parse('$_baseURL/edit-account/'),
       body: userData,
       headers: {"Authorization": "Token ${_token(context)}"},
     );

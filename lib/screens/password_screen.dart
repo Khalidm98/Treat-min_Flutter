@@ -71,7 +71,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
     setAppLocalization(context);
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: BackgroundImage(
         child: SafeArea(
           child: GestureDetector(

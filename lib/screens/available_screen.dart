@@ -327,7 +327,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
     }
 
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text(entity.name)),
       body: BackgroundImage(
         child: GestureDetector(

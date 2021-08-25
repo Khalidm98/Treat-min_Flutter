@@ -46,7 +46,7 @@ Future<LatLng> searchPlace(BuildContext context) async {
 Future<List<PlacesSearchResult>> nearbyHospitals(LatLng location) async {
   final places = GoogleMapsPlaces(apiKey: GOOGLE_API_KEY);
   final response = await places.searchNearbyWithRadius(
-    Location(location.latitude, location.longitude),
+    Location(lat: location.latitude, lng: location.longitude),
     800,
     type: 'hospital',
   );
