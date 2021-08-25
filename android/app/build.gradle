@@ -47,7 +47,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.treat_min.flutter"
+        applicationId "com.treat_min.android"
         minSdkVersion 24
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
