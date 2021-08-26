@@ -31,7 +31,7 @@ class ContactScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.indigo[600],
+                  color: Colors.indigo.shade600,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
@@ -53,7 +53,7 @@ class ContactScreen extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
-                  color: Colors.cyan[500],
+                  color: Colors.cyan,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: ListTile(
@@ -114,7 +114,7 @@ class ContactScreen extends StatelessWidget {
                   ),
                   subtitle: Text(
                     _ahmedEmail,
-                    style: theme.textTheme.subtitle1
+                    style: theme.textTheme.subtitle1!
                         .copyWith(fontSize: 11, color: Colors.white),
                   ),
                   onTap: () => _launchEmail(_ahmedEmail),
@@ -138,7 +138,7 @@ class ContactScreen extends StatelessWidget {
                   ),
                   subtitle: Text(
                     _khalidEmail,
-                    style: theme.textTheme.subtitle1
+                    style: theme.textTheme.subtitle1!
                         .copyWith(fontSize: 11, color: Colors.white),
                   ),
                   onTap: () => _launchEmail(_khalidEmail),

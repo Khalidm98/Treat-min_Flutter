@@ -70,9 +70,9 @@ class AccountScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: accent, width: 2),
                 image: DecorationImage(
-                  image: userData.photo.isEmpty
+                  image: (userData.photo!.isEmpty
                       ? AssetImage('assets/images/placeholder.png')
-                      : FileImage(File(userData.photo)),
+                      : FileImage(File(userData.photo!))) as ImageProvider<Object>,
                 ),
               ),
               alignment: Alignment.topRight,
@@ -90,21 +90,21 @@ class AccountScreen extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.account_circle, color: accent, size: 40),
               title: Text(t('name')),
-              subtitle: Text(userData.name),
+              subtitle: Text(userData.name!),
             ),
             const Divider(height: 0),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.alternate_email, color: accent, size: 40),
               title: Text(t('email')),
-              subtitle: Text(userData.email),
+              subtitle: Text(userData.email!),
             ),
             const Divider(height: 0),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: Icon(Icons.phone_android, color: accent, size: 40),
               title: Text(t('phone')),
-              subtitle: Text(userData.phone),
+              subtitle: Text(userData.phone!),
             ),
             const Divider(height: 0),
             ListTile(
@@ -122,10 +122,10 @@ class AccountScreen extends StatelessWidget {
                 style: theme.textTheme.headline5,
               ),
             ),
-            userData.current.isEmpty
+            userData.current!.isEmpty
                 ? _noReservation(theme)
                 : Column(
-                    children: userData.current.map((appointment) {
+                    children: userData.current!.map((appointment) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: AppointmentCard(
@@ -143,10 +143,10 @@ class AccountScreen extends StatelessWidget {
                 style: theme.textTheme.headline5,
               ),
             ),
-            userData.past.isEmpty
+            userData.past!.isEmpty
                 ? _noReservation(theme)
                 : Column(
-                    children: userData.past.map((appointment) {
+                    children: userData.past!.map((appointment) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: AppointmentCard(

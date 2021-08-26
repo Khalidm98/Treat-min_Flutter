@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class BackgroundImage extends StatelessWidget {
-  final Key key;
+  final Key? key;
   final Widget child;
-  final DecorationPosition position;
+  final DecorationPosition? position;
 
-  const BackgroundImage({@required this.child, this.key, this.position});
+  const BackgroundImage({required this.child, this.key, this.position});
 
   @override
   Widget build(BuildContext context) {

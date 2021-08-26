@@ -38,7 +38,7 @@ class SettingsScreen extends StatelessWidget {
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
             //     borderRadius: BorderRadius.circular(10),
             //   ),
             //   margin: EdgeInsets.zero,
-            //   color: Colors.grey[300],
+            //   color: Colors.grey.shade300,
             //   child: SwitchListTile(
             //     value: appData.notifications,
             //     onChanged: (val) => appData.setNotifications(val),
@@ -88,7 +88,7 @@ class SettingsScreen extends StatelessWidget {
             // const SizedBox(height: 15),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
@@ -98,7 +98,7 @@ class SettingsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                tileColor: Colors.grey[300],
+                tileColor: Colors.grey.shade300,
                 title: Text(t('about_us'), style: theme.textTheme.headline6),
                 trailing: Stack(
                   alignment: Alignment.center,
@@ -115,7 +115,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 15),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
@@ -125,7 +125,7 @@ class SettingsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                tileColor: Colors.grey[300],
+                tileColor: Colors.grey.shade300,
                 title: Text(t('contact_us'), style: theme.textTheme.headline6),
                 trailing: Stack(
                   alignment: Alignment.center,
@@ -143,7 +143,7 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 15),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ListTile(
@@ -156,7 +156,7 @@ class SettingsScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                tileColor: Colors.grey[300],
+                tileColor: Colors.grey.shade300,
                 title: Text(
                   t(isLoggedIn ? 'log_out' : 'log_in'),
                   style: theme.textTheme.headline6,

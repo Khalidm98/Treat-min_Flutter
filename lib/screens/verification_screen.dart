@@ -20,7 +20,7 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   final List _controllers = List.generate(4, (_) => TextEditingController());
   final List _focusNodes = List.generate(3, (_) => FocusNode());
-  TapGestureRecognizer _resendCode;
+  late TapGestureRecognizer _resendCode;
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
           context,
           t('resend_prompt'),
           onYes: () async {
-            final args = ModalRoute.of(context).settings.arguments as Map;
+            final args = ModalRoute.of(context)!.settings.arguments as Map;
             final email = args['email'];
             final mode = args['mode'];
             final response = mode == AuthMode.signUp
@@ -83,7 +83,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       return;
     }
 
-    final args = ModalRoute.of(context).settings.arguments as Map;
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
     final email = args['email'];
     final mode = args['mode'];
     if (mode == AuthMode.signUp) {
@@ -150,7 +150,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 focusNode: index == 0 ? null : _focusNodes[index - 1],
                 keyboardType: TextInputType.number,
                 maxLength: 2,
-                style: theme.textTheme.headline5.copyWith(color: Colors.white),
+                style: theme.textTheme.headline5!.copyWith(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -190,7 +190,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       RichText(
                         text: TextSpan(
                           text: t('no_code'),
-                          style: theme.textTheme.subtitle1
+                          style: theme.textTheme.subtitle1!
                               .copyWith(color: theme.hintColor),
                           children: <TextSpan>[
                             TextSpan(

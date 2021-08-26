@@ -25,10 +25,10 @@ class _AuthScreenState extends State<AuthScreen>
   final Map<String, String> _data = Map();
   final _forgetController = TextEditingController();
   AuthMode _mode = AuthMode.login;
-  AnimationController _controller;
-  Animation<double> _animation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  late TapGestureRecognizer _switchMode;
   bool _passObscure = true;
-  TapGestureRecognizer _switchMode;
 
   @override
   void initState() {
@@ -64,8 +64,8 @@ class _AuthScreenState extends State<AuthScreen>
     super.dispose();
   }
 
-  String _emailValidator(String email) {
-    if (email.isEmpty) {
+  String? _emailValidator(String? email) {
+    if (email!.isEmpty) {
       return t('email_empty');
     } else if (!email.contains('.') ||
         !email.contains('@') ||
@@ -77,12 +77,12 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Future<void> _signUp() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
 
-    final response = await AccountAPI.registerEmail(context, _data['email']);
+    final response = await AccountAPI.registerEmail(context, _data['email']!);
     if (response) {
       Navigator.of(context).pushNamed(
         VerificationScreen.routeName,
@@ -92,10 +92,10 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
 
     final response = await AccountAPI.login(context, _data);
     if (response) {
@@ -182,7 +182,7 @@ class _AuthScreenState extends State<AuthScreen>
                             ),
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
-                            onSaved: (value) => _data['email'] = value,
+                            onSaved: (value) => _data['email'] = value!,
                             validator: _emailValidator,
                           ),
                         ),
@@ -215,13 +215,13 @@ class _AuthScreenState extends State<AuthScreen>
                                     obscureText: _passObscure,
                                     onSaved: (value) {
                                       if (_mode == AuthMode.login) {
-                                        _data['password'] = value;
+                                        _data['password'] = value!;
                                       }
                                     },
                                     validator: (value) {
                                       if (_mode == AuthMode.signUp) {
                                         return null;
-                                      } else if (value.isEmpty) {
+                                      } else if (value!.isEmpty) {
                                         return t('password_empty');
                                       }
                                       return null;
@@ -233,7 +233,7 @@ class _AuthScreenState extends State<AuthScreen>
                                   onTap: _forgotPassword,
                                   child: Text(
                                     t('forgot_password'),
-                                    style: theme.textTheme.subtitle1
+                                    style: theme.textTheme.subtitle1!
                                         .copyWith(color: theme.hintColor),
                                   ),
                                 )
@@ -273,7 +273,7 @@ class _AuthScreenState extends State<AuthScreen>
                       text: t(_mode == AuthMode.signUp
                           ? 'already_registered'
                           : 'not_registered'),
-                      style: theme.textTheme.subtitle1
+                      style: theme.textTheme.subtitle1!
                           .copyWith(color: theme.hintColor),
                       children: <TextSpan>[
                         TextSpan(

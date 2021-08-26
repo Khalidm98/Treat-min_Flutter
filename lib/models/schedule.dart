@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../localizations/app_localizations.dart';
 
 class Schedule {
-  int id;
-  String day;
+  int? id;
+  String? day;
   String start;
   String end;
 
-  Schedule({this.id, this.day, this.start, this.end});
+  Schedule({required this.start, required this.end});
 
   Schedule.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -16,7 +16,7 @@ class Schedule {
         end = json['end'];
 
   String translate(BuildContext context) {
-    return t(day) +
+    return t(day!) +
         ' - ' +
         t('from') +
         ' ${start.substring(0, 5)} ' +

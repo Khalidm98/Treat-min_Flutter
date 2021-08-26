@@ -6,9 +6,9 @@ import '../utils/enumerations.dart';
 import '../main.dart';
 
 class AppData with ChangeNotifier {
-  String language;
-  bool notifications;
-  bool isFirstRun;
+  late String language;
+  late bool notifications;
+  late bool isFirstRun;
 
   static const maxClinicID = 29;
   List<Clinic> clinics = [];
@@ -43,8 +43,8 @@ class AppData with ChangeNotifier {
       setLanguage(context, Localizations.localeOf(context).languageCode);
     } else {
       isFirstRun = false;
-      language = prefs.getString('language');
-      notifications = prefs.getBool('notifications');
+      language = prefs.getString('language')!;
+      notifications = prefs.getBool('notifications')!;
     }
   }
 
@@ -115,12 +115,12 @@ class AppData with ChangeNotifier {
 
   List<City> getCities(BuildContext context) {
     final list = cities.map((entity) => entity.clone()).toList();
-    return translate(context, list);
+    return translate(context, list) as List<City>;
   }
 
   List<Area> getAreas(BuildContext context) {
     final list = areas.map((entity) => entity.clone()).toList();
-    return translate(context, list);
+    return translate(context, list) as List<Area>;
   }
 
   List<Hospital> getHospitals() {
@@ -130,7 +130,7 @@ class AppData with ChangeNotifier {
   List<Area> getCityAreas(BuildContext context, int cityId) {
     final ref = areas.where((area) => area.city == cityId).toList();
     final list = ref.map((area) => area.clone()).toList();
-    return translate(context, list);
+    return translate(context, list) as List<Area>;
   }
 
   List<Hospital> getCityHospitals(int cityId) {

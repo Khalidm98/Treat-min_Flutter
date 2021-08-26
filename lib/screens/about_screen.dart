@@ -65,7 +65,7 @@ class AboutScreen extends StatelessWidget {
         child: NotificationListener<OverscrollIndicatorNotification>(
           onNotification: (OverscrollIndicatorNotification overScroll) {
             overScroll.disallowGlow();
-            return;
+            return true;
           },
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20),

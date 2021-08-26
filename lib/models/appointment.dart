@@ -8,7 +8,7 @@ class Appointment {
   Schedule schedule;
   String status;
   String appointmentDate;
-  String doctor;
+  String? doctor;
 
   Appointment.fromJson(Map<String, dynamic> json)
       : id = json['id'],

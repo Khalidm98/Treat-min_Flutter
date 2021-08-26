@@ -7,9 +7,9 @@ class SearchField extends StatelessWidget {
   final String hintText;
 
   const SearchField({
-    @required this.controller,
-    @required this.onChanged,
-    this.hintText,
+    required this.controller,
+    required this.onChanged,
+    required this.hintText,
   });
 
   @override

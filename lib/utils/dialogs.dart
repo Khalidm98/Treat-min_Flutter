@@ -12,7 +12,7 @@ void loading(BuildContext context) {
   );
 }
 
-void alert(BuildContext context, String message, {void Function() onOk}) {
+void alert(BuildContext context, String message, {void Function()? onOk}) {
   showDialog(
     context: context,
     builder: (_) => AlertDialog(
@@ -33,7 +33,7 @@ void alert(BuildContext context, String message, {void Function() onOk}) {
 }
 
 void prompt(BuildContext context, String message,
-    {void Function() onYes, void Function() onNo}) {
+    {void Function()? onYes, void Function()? onNo}) {
   showDialog(
     context: context,
     builder: (_) => AlertDialog(

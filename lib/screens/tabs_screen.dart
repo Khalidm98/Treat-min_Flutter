@@ -16,13 +16,13 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   final _slider = CarouselController();
   int _currentIndex = 0;
-  int _nextIndex;
+  int? _nextIndex;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      final int index = ModalRoute.of(context).settings.arguments;
+      final int? index = ModalRoute.of(context)!.settings.arguments as int?;
       setState(() {
         _currentIndex = index ?? 0;
       });

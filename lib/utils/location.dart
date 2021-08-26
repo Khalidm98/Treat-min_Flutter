@@ -10,7 +10,7 @@ Future<bool> checkPermission() async {
   return true;
 }
 
-Future<LocationData> getLocation() async {
+Future<LocationData?> getLocation() async {
   Location location = Location();
   bool serviceEnabled = await location.serviceEnabled();
   if (!serviceEnabled) {

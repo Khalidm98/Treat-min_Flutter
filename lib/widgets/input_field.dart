@@ -5,7 +5,7 @@ class InputField extends StatelessWidget {
   final String label;
   final TextFormField textFormField;
 
-  const InputField({@required this.label, @required this.textFormField});
+  const InputField({required this.label, required this.textFormField});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class InputField extends StatelessWidget {
             ),
             child: Text(
               label,
-              style: theme.textTheme.subtitle1.copyWith(color: Colors.white),
+              style: theme.textTheme.subtitle1!.copyWith(color: Colors.white),
             ),
           ),
         ),

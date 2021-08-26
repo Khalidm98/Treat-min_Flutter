@@ -64,10 +64,10 @@ class Doctor extends NamedEntity {
 class Hospital extends NamedEntity {
   int city;
   int area;
-  String address;
-  String phone;
-  double latitude;
-  double longitude;
+  String? address;
+  String? phone;
+  double? latitude;
+  double? longitude;
 
   Hospital.fromJson(Map<String, dynamic> json)
       : city = json['city'],

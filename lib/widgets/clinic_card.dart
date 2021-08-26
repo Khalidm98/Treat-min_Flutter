@@ -10,7 +10,7 @@ class ClinicCard extends StatelessWidget {
   final Clinic clinic;
   final ClinicDetail detail;
 
-  const ClinicCard({@required this.clinic, @required this.detail});
+  const ClinicCard({required this.clinic, required this.detail});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class ClinicCard extends StatelessWidget {
           width: double.infinity,
           child: Text(
             detail.hospital.name,
-            style: theme.textTheme.headline6.copyWith(color: Colors.white),
+            style: theme.textTheme.headline6!.copyWith(color: Colors.white),
           ),
         ),
         Container(
@@ -95,7 +95,7 @@ class ClinicCard extends StatelessWidget {
                       children: [
                         Text(
                           '${detail.price} ' + t('egp'),
-                          style: theme.textTheme.subtitle1
+                          style: theme.textTheme.subtitle1!
                               .copyWith(color: theme.primaryColor),
                         ),
                         RatingHearts(
@@ -106,8 +106,8 @@ class ClinicCard extends StatelessWidget {
                               : 0,
                         ),
                         Text(
-                          detail.hospital.phone,
-                          style: theme.textTheme.subtitle1
+                          detail.hospital.phone!,
+                          style: theme.textTheme.subtitle1!
                               .copyWith(color: theme.primaryColor),
                         ),
                       ],
@@ -126,7 +126,7 @@ class ClinicCard extends StatelessWidget {
                       child: FittedBox(
                         child: Text(
                           t('view_details'),
-                          style: theme.textTheme.headline5
+                          style: theme.textTheme.headline5!
                               .copyWith(color: Colors.white),
                         ),
                       ),

@@ -20,7 +20,7 @@ double distance(LatLng location1, LatLng location2) {
   return 12742 * asin(sqrt(a));
 }
 
-Future<LatLng> searchPlace(BuildContext context) async {
+Future<LatLng?> searchPlace(BuildContext context) async {
   final place = await PlacesAutocomplete.show(
     context: context,
     apiKey: GOOGLE_API_KEY,
@@ -29,17 +29,20 @@ Future<LatLng> searchPlace(BuildContext context) async {
     logo: const SizedBox(),
     region: 'eg',
     hint: t('find_hospitals'),
+    types: [],
+    components: [],
+    strictbounds: false,
   );
   if (place == null) {
     return null;
   }
 
   final places = GoogleMapsPlaces(apiKey: GOOGLE_API_KEY);
-  final details = await places.getDetailsByPlaceId(place.placeId);
+  final details = await places.getDetailsByPlaceId(place.placeId!);
   places.dispose();
   return LatLng(
-    details.result.geometry.location.lat,
-    details.result.geometry.location.lng,
+    details.result.geometry!.location.lat,
+    details.result.geometry!.location.lng,
   );
 }
 

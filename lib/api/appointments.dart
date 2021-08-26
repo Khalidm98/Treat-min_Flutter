@@ -13,7 +13,7 @@ class AppointmentAPI {
   static const _baseURL = 'https://www.treat-min.com/api';
 
   static String _token(BuildContext context) {
-    return Provider.of<UserData>(context, listen: false).token;
+    return Provider.of<UserData>(context, listen: false).token!;
   }
 
   static Map<String, String> _headers(BuildContext context) {

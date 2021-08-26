@@ -10,7 +10,7 @@ class ServiceCard extends StatelessWidget {
   final Service service;
   final ServiceDetail detail;
 
-  const ServiceCard({@required this.service, @required this.detail});
+  const ServiceCard({required this.service, required this.detail});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class ServiceCard extends StatelessWidget {
           width: double.infinity,
           child: Text(
             detail.hospital.name,
-            style: theme.textTheme.headline6.copyWith(color: Colors.white),
+            style: theme.textTheme.headline6!.copyWith(color: Colors.white),
             textAlign: TextAlign.center,
           ),
         ),
@@ -66,7 +66,7 @@ class ServiceCard extends StatelessWidget {
                       children: [
                         Text(
                           '${detail.price} ' + t('egp'),
-                          style: theme.textTheme.subtitle1
+                          style: theme.textTheme.subtitle1!
                               .copyWith(color: theme.primaryColor),
                         ),
                         RatingHearts(
@@ -77,8 +77,8 @@ class ServiceCard extends StatelessWidget {
                               : 0,
                         ),
                         Text(
-                          detail.hospital.phone,
-                          style: theme.textTheme.subtitle1
+                          detail.hospital.phone!,
+                          style: theme.textTheme.subtitle1!
                               .copyWith(color: theme.primaryColor),
                         ),
                       ],
@@ -97,7 +97,7 @@ class ServiceCard extends StatelessWidget {
                       child: FittedBox(
                         child: Text(
                           t('view_details'),
-                          style: theme.textTheme.headline5
+                          style: theme.textTheme.headline5!
                               .copyWith(color: Colors.white),
                         ),
                       ),

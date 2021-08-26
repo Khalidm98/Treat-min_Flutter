@@ -36,11 +36,11 @@ class ReviewCard extends StatelessWidget {
                 },
               ),
             ),
-            title: Text(review.name),
+            title: Text(review.name!),
             subtitle: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(review.date),
+                Text(review.date!),
                 RatingHearts(
                   size: 15,
                   active: false,
@@ -49,10 +49,10 @@ class ReviewCard extends StatelessWidget {
               ],
             ),
           ),
-          if (review.review != null && review.review.isNotEmpty)
+          if (review.review != null && review.review!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-              child: Text(review.review, textAlign: TextAlign.justify),
+              child: Text(review.review!, textAlign: TextAlign.justify),
             ),
         ],
       ),

@@ -21,8 +21,8 @@ class _PasswordScreenState extends State<PasswordScreen> {
   final Map<String, String> _data = Map();
   final _passObscure = [true, true, true];
 
-  String _validator(value) {
-    if (value.isEmpty) {
+  String? _validator(String? value) {
+    if (value!.isEmpty) {
       return t('password_empty');
     } else if (value.length < 8) {
       return t('password_length');
@@ -33,10 +33,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
   }
 
   Future<void> _save(bool isLoggedIn) async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
 
     if (_data['password'] != _data['confirm']) {
       alert(context, t('confirm_password_match'));
@@ -45,16 +45,16 @@ class _PasswordScreenState extends State<PasswordScreen> {
 
     if (isLoggedIn) {
       final response = await AccountAPI.changePassword(
-          context, _data['old'], _data['password']);
+          context, _data['old']!, _data['password']!);
       if (response) {
         alert(context, t('changed_successfully'), onOk: () {
           Navigator.pop(context);
         });
       }
     } else {
-      final email = ModalRoute.of(context).settings.arguments;
+      final email = ModalRoute.of(context)!.settings.arguments as String;
       final response =
-          await AccountAPI.passwordReset(context, email, _data['password']);
+          await AccountAPI.passwordReset(context, email, _data['password']!);
       if (response) {
         alert(context, t('reset_successfully'), onOk: () {
           Navigator.of(context)
@@ -112,9 +112,9 @@ class _PasswordScreenState extends State<PasswordScreen> {
                                   ),
                                   obscureText: _passObscure[0],
                                   textInputAction: TextInputAction.next,
-                                  onSaved: (value) => _data['old'] = value,
+                                  onSaved: (value) => _data['old'] = value!,
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return t('password_empty');
                                     }
                                     return null;
@@ -140,7 +140,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                             ),
                             obscureText: _passObscure[1],
                             textInputAction: TextInputAction.next,
-                            onSaved: (value) => _data['password'] = value,
+                            onSaved: (value) => _data['password'] = value!,
                             validator: _validator,
                           ),
                         ),
@@ -162,7 +162,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
                               ),
                             ),
                             obscureText: _passObscure[2],
-                            onSaved: (value) => _data['confirm'] = value,
+                            onSaved: (value) => _data['confirm'] = value!,
                             validator: _validator,
                           ),
                         ),

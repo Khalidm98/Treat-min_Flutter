@@ -26,7 +26,7 @@ class SocialButton extends StatelessWidget {
         ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(
-            social == Social.google ? Colors.white : Colors.indigo[600],
+            social == Social.google ? Colors.white : Colors.indigo.shade600,
           ),
           foregroundColor: MaterialStateProperty.all<Color>(
             social == Social.google ? Colors.black : Colors.white,

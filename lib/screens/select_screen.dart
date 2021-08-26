@@ -19,7 +19,7 @@ class SelectScreen extends StatefulWidget {
 class _SelectScreenState extends State<SelectScreen> {
   final _controller = TextEditingController();
   Entity _entity = Entity.clinic;
-  AppData _appData;
+  late AppData _appData;
   List _list = [];
   List _searchList = [];
 
@@ -27,7 +27,7 @@ class _SelectScreenState extends State<SelectScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      _entity = ModalRoute.of(context).settings.arguments;
+      _entity = ModalRoute.of(context)!.settings.arguments as Entity;
       _appData = Provider.of<AppData>(context, listen: false);
       _list = _appData.getEntities(context, _entity);
       if (_list.isEmpty) {
@@ -97,7 +97,7 @@ class _SelectScreenState extends State<SelectScreen> {
                 child: NotificationListener<OverscrollIndicatorNotification>(
                   onNotification: (OverscrollIndicatorNotification overScroll) {
                     overScroll.disallowGlow();
-                    return;
+                    return true;
                   },
                   child: ListView.separated(
                     itemCount: _searchList.length,

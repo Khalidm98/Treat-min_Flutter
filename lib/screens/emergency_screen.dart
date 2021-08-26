@@ -19,7 +19,8 @@ class EmergencyScreen extends StatefulWidget {
 
 class _EmergencyScreenState extends State<EmergencyScreen> {
   final _controller = Completer<GoogleMapController>();
-  LatLng _currentLocation, _location;
+  late LatLng _currentLocation, _location;
+  bool _loading = true;
   Set<Marker> _markers = {};
   Widget _hospitalDetails = const SizedBox();
 
@@ -31,8 +32,9 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       if (current == null) {
         Navigator.pop(context);
       } else {
-        _currentLocation = LatLng(current.latitude, current.longitude);
+        _currentLocation = LatLng(current.latitude!, current.longitude!);
         _location = _currentLocation;
+        _loading = false;
         _setMarkers(_location);
       }
     });
@@ -55,8 +57,8 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
       _markers.add(Marker(
         markerId: MarkerId(hospital.name),
         position: LatLng(
-          hospital.geometry.location.lat,
-          hospital.geometry.location.lng,
+          hospital.geometry!.location.lat,
+          hospital.geometry!.location.lng,
         ),
         infoWindow: InfoWindow(title: hospital.name),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
@@ -102,7 +104,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  Text(hospital.vicinity),
+                  Text(hospital.vicinity!),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -112,11 +114,11 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
                           : RatingHearts(
                               size: 20,
                               active: false,
-                              rating: (hospital.rating).round(),
+                              rating: hospital.rating!.round(),
                             ),
                       hospital.openingHours == null
                           ? const SizedBox()
-                          : Text(hospital.openingHours.openNow
+                          : Text(hospital.openingHours!.openNow
                               ? t('open')
                               : t('closed')),
                     ],
@@ -134,7 +136,7 @@ class _EmergencyScreenState extends State<EmergencyScreen> {
   Widget build(BuildContext context) {
     setAppLocalization(context);
 
-    if (_location == null) {
+    if (_loading) {
       return Scaffold(
         appBar: AppBar(title: Text(t('emergency'))),
         body: const Center(child: CircularProgressIndicator()),

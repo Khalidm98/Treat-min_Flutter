@@ -34,23 +34,23 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 
   static void setLocale(BuildContext context, Locale locale) {
-    _MyAppState state = context.findAncestorStateOfType<_MyAppState>();
+    final state = context.findAncestorStateOfType<_MyAppState>()!;
     state.setLocale(locale);
   }
 }
 
 class _MyAppState extends State<MyApp> {
-  Locale _locale;
+  static const _greenLight = const Color(0xFF60C0A0);
+  static const _green = const Color(0xFF40B080);
+  static const _greenDark = const Color(0xFF20A060);
+  static const _blue = const Color(0xFF205070);
+  static const _red = const Color(0xFFA01010);
+  Locale? _locale;
 
   void setLocale(Locale locale) => setState(() => _locale = locale);
 
   @override
   Widget build(BuildContext context) {
-    const Color greenLight = const Color(0xFF60C0A0);
-    const Color green = const Color(0xFF40B080);
-    const Color greenDark = const Color(0xFF20A060);
-    const Color blue = const Color(0xFF205070);
-    const Color red = const Color(0xFFA01010);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppData()),
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
         ],
         localeResolutionCallback: (deviceLocale, supportedLocales) {
           for (Locale locale in supportedLocales) {
-            if (locale.languageCode == deviceLocale.languageCode) {
+            if (locale.languageCode == deviceLocale!.languageCode) {
               return locale;
             }
           }
@@ -80,22 +80,22 @@ class _MyAppState extends State<MyApp> {
         },
         theme: ThemeData(
           fontFamily: 'Montserrat',
-          primaryColor: green,
-          primaryColorDark: greenDark,
-          primaryColorLight: greenLight,
-          accentColor: blue,
-          errorColor: red,
-          dividerColor: blue,
-          colorScheme: ColorScheme.light(primary: green),
+          primaryColor: _green,
+          primaryColorDark: _greenDark,
+          primaryColorLight: _greenLight,
+          accentColor: _blue,
+          errorColor: _red,
+          dividerColor: _blue,
+          colorScheme: ColorScheme.light(primary: _green),
           appBarTheme: const AppBarTheme(centerTitle: true),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
               shape: MaterialStateProperty.all<OutlinedBorder>(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              backgroundColor: MaterialStateProperty.all<Color>(greenDark),
+              backgroundColor: MaterialStateProperty.all<Color>(_greenDark),
               overlayColor: MaterialStateProperty.all<Color>(
-                greenLight.withOpacity(0.2),
+                _greenLight.withOpacity(0.2),
               ),
               textStyle: MaterialStateProperty.all<TextStyle>(
                 const TextStyle(
@@ -115,15 +115,15 @@ class _MyAppState extends State<MyApp> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               side: MaterialStateProperty.all<BorderSide>(
-                const BorderSide(color: red),
+                const BorderSide(color: _red),
               ),
               backgroundColor: MaterialStateProperty.all<Color>(
-                red.withOpacity(0.2),
+                _red.withOpacity(0.2),
               ),
               overlayColor: MaterialStateProperty.all<Color>(
-                red.withOpacity(0.4),
+                _red.withOpacity(0.4),
               ),
-              foregroundColor: MaterialStateProperty.all<Color>(red),
+              foregroundColor: MaterialStateProperty.all<Color>(_red),
               textStyle: MaterialStateProperty.all<TextStyle>(
                 const TextStyle(
                   fontFamily: 'Montserrat',
@@ -135,9 +135,9 @@ class _MyAppState extends State<MyApp> {
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.all<Color>(
-                blue.withOpacity(0.2),
+                _blue.withOpacity(0.2),
               ),
-              foregroundColor: MaterialStateProperty.all<Color>(blue),
+              foregroundColor: MaterialStateProperty.all<Color>(_blue),
               textStyle: MaterialStateProperty.all<TextStyle>(
                 const TextStyle(
                   fontFamily: 'Montserrat',
@@ -151,7 +151,7 @@ class _MyAppState extends State<MyApp> {
             headline4: const TextStyle(
                 fontWeight: FontWeight.w700, color: Colors.black, height: 1.2),
             headline5: const TextStyle(
-                fontWeight: FontWeight.w700, color: blue, height: 1.2),
+                fontWeight: FontWeight.w700, color: _blue, height: 1.2),
             headline6: const TextStyle(fontWeight: FontWeight.w500),
             subtitle1:
                 const TextStyle(fontWeight: FontWeight.w700, height: 1.2),
@@ -160,9 +160,9 @@ class _MyAppState extends State<MyApp> {
             caption: const TextStyle(fontWeight: FontWeight.w500),
           ),
           textSelectionTheme: const TextSelectionThemeData(
-            cursorColor: greenLight,
-            selectionColor: greenLight,
-            selectionHandleColor: greenLight,
+            cursorColor: _greenLight,
+            selectionColor: _greenLight,
+            selectionHandleColor: _greenLight,
           ),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),

@@ -12,7 +12,7 @@ class AppointmentCard extends StatefulWidget {
   final Appointment appointment;
   final bool isCurrent;
 
-  AppointmentCard({this.appointment, this.isCurrent});
+  AppointmentCard({required this.appointment, required this.isCurrent});
 
   @override
   _AppointmentCardState createState() => _AppointmentCardState();
@@ -20,7 +20,7 @@ class AppointmentCard extends StatefulWidget {
 
 class _AppointmentCardState extends State<AppointmentCard> {
   final _controller = TextEditingController();
-  int _rating;
+  int? _rating;
 
   @override
   void dispose() {
@@ -163,7 +163,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             padding: const EdgeInsets.symmetric(horizontal: 5),
             decoration: BoxDecoration(
               color: widget.appointment.status == 'W'
-                  ? Colors.grey[500]
+                  ? Colors.grey
                   : widget.appointment.status == 'R'
                       ? theme.errorColor
                       : theme.primaryColorLight,
@@ -180,7 +180,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     : widget.appointment.status == 'R'
                         ? t('rejected')
                         : t('accepted'),
-                style: theme.textTheme.button.copyWith(color: Colors.white),
+                style: theme.textTheme.button!.copyWith(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -199,7 +199,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   ),
                   child: Text(
                     widget.appointment.hospital,
-                    style: theme.textTheme.button.copyWith(color: Colors.white),
+                    style: theme.textTheme.button!.copyWith(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -209,7 +209,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     dense: true,
                     title: widget.appointment.doctor == null
                         ? Text(_translateEntity())
-                        : Text(widget.appointment.doctor),
+                        : Text(widget.appointment.doctor!),
                     subtitle: widget.appointment.doctor == null
                         ? null
                         : Text(_translateEntity()),
@@ -220,7 +220,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                           )
                         : widget.appointment.status == "A"
                             ? OutlinedButton(
-                                style: theme.outlinedButtonTheme.style.copyWith(
+                                style: theme.outlinedButtonTheme.style!.copyWith(
                                   side: MaterialStateProperty.all<BorderSide>(
                                     BorderSide(color: theme.primaryColor),
                                   ),
@@ -262,7 +262,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                           ),
                           Text(
                             widget.appointment.appointmentDate,
-                            style: theme.textTheme.caption
+                            style: theme.textTheme.caption!
                                 .copyWith(color: Colors.white),
                           ),
                         ],
@@ -276,7 +276,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                           ),
                           Text(
                             '${widget.appointment.schedule.start.substring(0, 5)} - ${widget.appointment.schedule.end.substring(0, 5)}',
-                            style: theme.textTheme.caption
+                            style: theme.textTheme.caption!
                                 .copyWith(color: Colors.white),
                           ),
                         ],
@@ -290,7 +290,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                           ),
                           Text(
                             '${widget.appointment.price} ' + t('egp'),
-                            style: theme.textTheme.caption
+                            style: theme.textTheme.caption!
                                 .copyWith(color: Colors.white),
                           ),
                         ],

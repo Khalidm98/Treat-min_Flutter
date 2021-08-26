@@ -9,33 +9,33 @@ class UserData with ChangeNotifier {
   bool isLoggedIn = false;
 
   // Token
-  String token;
-  DateTime expiry;
+  String? token;
+  DateTime? expiry;
 
   // Info
-  String name;
-  String email;
-  String gender;
-  String phone;
-  String photo;
-  DateTime birth;
+  String? name;
+  String? email;
+  String? gender;
+  String? phone;
+  String? photo;
+  DateTime? birth;
 
   // User Appointments
-  List<Appointment> current;
-  List<Appointment> past;
+  List<Appointment>? current;
+  List<Appointment>? past;
 
   void setAppointments(Map<String, dynamic> jsonData) {
     current = jsonData['current']['clinics'].map<Appointment>((json) {
       return Appointment.fromJson(json);
     }).toList();
-    current += jsonData['current']['services'].map<Appointment>((json) {
+    current = current! + jsonData['current']['services'].map<Appointment>((json) {
       return Appointment.fromJson(json);
     }).toList();
 
     past = jsonData['past']['clinics'].map<Appointment>((json) {
       return Appointment.fromJson(json);
     }).toList();
-    past += jsonData['past']['services'].map<Appointment>((json) {
+    past = past! + jsonData['past']['services'].map<Appointment>((json) {
       return Appointment.fromJson(json);
     }).toList();
 
@@ -48,10 +48,11 @@ class UserData with ChangeNotifier {
       return;
     }
 
+    expiry = DateTime.now().add(const Duration(days: 182));
     final userData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
-    userData['expiry'] = DateTime.now().add(const Duration(days: 182));
-    expiry = userData['expiry'];
+        json.decode(prefs.getString('userData')!) as Map<String, dynamic>;
+    userData['expiry'] = expiry!.toIso8601String();
+    prefs.setString('userData', json.encode(userData));
   }
 
   Future<void> tryAutoLogin(BuildContext context) async {
@@ -61,14 +62,14 @@ class UserData with ChangeNotifier {
     }
 
     final userData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+        json.decode(prefs.getString('userData')!) as Map<String, dynamic>;
     if (!userData.containsKey('expiry')) {
       prefs.remove('userData');
       return;
     }
 
     expiry = DateTime.parse(userData['expiry']);
-    if (expiry.isBefore(DateTime.now())) {
+    if (expiry!.isBefore(DateTime.now())) {
       prefs.remove('userData');
       return;
     }
@@ -85,7 +86,7 @@ class UserData with ChangeNotifier {
     }
 
     final userData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+        json.decode(prefs.getString('userData')!) as Map<String, dynamic>;
     token = userData['token'];
     expiry = DateTime.parse(userData['expiry']);
     name = userData['name'];
@@ -98,13 +99,12 @@ class UserData with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveData(Map<String, String> data) async {
+  Future<void> saveData(Map<String, dynamic> data) async {
     final prefs = await SharedPreferences.getInstance();
-    final userData = json.encode(data);
     if (prefs.containsKey('userData')) {
       prefs.remove('userData');
     }
-    prefs.setString('userData', userData);
+    prefs.setString('userData', json.encode(data));
     login();
     notifyListeners();
   }

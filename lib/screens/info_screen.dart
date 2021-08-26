@@ -29,21 +29,21 @@ class _InfoScreenState extends State<InfoScreen> {
   final TextEditingController _passController = TextEditingController();
   bool _passObscure = true;
   bool _imageChanged = false;
-  File _image;
-  DateTime _date;
-  String _gender;
+  File? _image;
+  late DateTime _date;
+  late String _gender;
 
   @override
   void initState() {
     super.initState();
     final userData = Provider.of<UserData>(context, listen: false);
     if (userData.isLoggedIn) {
-      if (userData.photo.isNotEmpty) {
-        _image = File(userData.photo);
+      if (userData.photo!.isNotEmpty) {
+        _image = File(userData.photo!);
       }
-      _date = userData.birth;
+      _date = userData.birth!;
       _dateController.text = _date.toIso8601String().substring(0, 10);
-      _gender = userData.gender;
+      _gender = userData.gender!;
     } else {
       _date = DateTime.now().subtract(const Duration(days: 365 * 20 + 5));
       _gender = 'i';
@@ -70,12 +70,12 @@ class _InfoScreenState extends State<InfoScreen> {
         compressFormat: ImageCompressFormat.png,
         cropStyle: CropStyle.circle,
         androidUiSettings: AndroidUiSettings(
-          activeControlsWidgetColor: Colors.grey[400],
+          activeControlsWidgetColor: Colors.grey.shade400,
           backgroundColor: Colors.white,
           dimmedLayerColor: Colors.white,
           showCropGrid: false,
           toolbarColor: theme.accentColor,
-          toolbarWidgetColor: Colors.grey[300],
+          toolbarWidgetColor: Colors.grey.shade400,
         ),
       );
       if (file != null) {
@@ -88,7 +88,7 @@ class _InfoScreenState extends State<InfoScreen> {
   }
 
   Future<void> _pickDate() async {
-    DateTime picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _date,
       firstDate: DateTime.now().subtract(const Duration(days: 365 * 80 + 20)),
@@ -106,19 +106,19 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<void> _submit(bool isLoggedIn) async {
     if (_gender.isEmpty || _gender == 'i') {
       setState(() => _gender = '');
-      _formKey.currentState.validate();
+      _formKey.currentState!.validate();
       return;
-    } else if (!_formKey.currentState.validate()) {
+    } else if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
     _account['gender'] = _gender;
     if (_imageChanged) {
       final dir = await getApplicationDocumentsDirectory();
       final path = '${dir.path}/user.png';
-      imageCache.clear();
-      await _image.copy(path);
+      imageCache!.clear();
+      await _image!.copy(path);
       _account['photo'] = path;
     } else if (_image == null) {
       _account['photo'] = '';
@@ -147,7 +147,7 @@ class _InfoScreenState extends State<InfoScreen> {
                   if (response) {
                     if (_imageChanged) {
                       final response =
-                          await AccountAPI.changePhoto(context, _image);
+                          await AccountAPI.changePhoto(context, _image!);
                       if (response) {
                         Navigator.pop(context);
                       }
@@ -163,11 +163,11 @@ class _InfoScreenState extends State<InfoScreen> {
       );
       _passController.clear();
     } else {
-      _account['email'] = ModalRoute.of(context).settings.arguments;
+      _account['email'] = ModalRoute.of(context)!.settings.arguments as String;
       final response = await AccountAPI.register(context, _account);
       if (response) {
         if (_imageChanged) {
-          await AccountAPI.changePhoto(context, _image);
+          await AccountAPI.changePhoto(context, _image!);
         }
         Navigator.of(context)
             .pushNamedAndRemoveUntil(TabsScreen.routeName, (route) => false);
@@ -209,9 +209,9 @@ class _InfoScreenState extends State<InfoScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(color: theme.accentColor, width: 2),
                         image: DecorationImage(
-                          image: _image == null
+                          image: (_image == null
                               ? AssetImage('assets/images/placeholder.png')
-                              : FileImage(_image),
+                              : FileImage(_image!)) as ImageProvider<Object>,
                         ),
                       ),
                     ),
@@ -267,9 +267,9 @@ class _InfoScreenState extends State<InfoScreen> {
                                 keyboardType: TextInputType.text,
                                 obscureText: _passObscure,
                                 onSaved: (value) =>
-                                    _account['password'] = value,
+                                    _account['password'] = value!,
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value!.isEmpty) {
                                     return t('password_empty');
                                   } else if (value.length < 8) {
                                     return t('password_length');
@@ -289,9 +289,9 @@ class _InfoScreenState extends State<InfoScreen> {
                           textCapitalization: TextCapitalization.words,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.name,
-                          onSaved: (value) => _account['name'] = value,
+                          onSaved: (value) => _account['name'] = value!,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return t('name_empty');
                             }
                             return null;
@@ -311,9 +311,9 @@ class _InfoScreenState extends State<InfoScreen> {
                           initialValue: isLoggedIn ? userData.phone : '',
                           keyboardType: TextInputType.phone,
                           maxLength: 11,
-                          onSaved: (value) => _account['phone'] = value,
+                          onSaved: (value) => _account['phone'] = value!,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return t('phone_empty');
                             } else if (int.tryParse(value) == null) {
                               return t('phone_numbers_only');
@@ -342,7 +342,7 @@ class _InfoScreenState extends State<InfoScreen> {
                                     _date.toIso8601String().substring(0, 10);
                               },
                               validator: (value) {
-                                if (value.isEmpty) {
+                                if (value!.isEmpty) {
                                   return t('birth_empty');
                                 }
                                 return null;
@@ -360,7 +360,9 @@ class _InfoScreenState extends State<InfoScreen> {
                     Radio(
                       value: 'M',
                       groupValue: _gender,
-                      onChanged: (value) => setState(() => _gender = value),
+                      onChanged: (String? value) {
+                        setState(() => _gender = value!);
+                      },
                       activeColor: theme.primaryColorDark,
                     ),
                     GestureDetector(
@@ -374,7 +376,9 @@ class _InfoScreenState extends State<InfoScreen> {
                     Radio(
                       value: 'F',
                       groupValue: _gender,
-                      onChanged: (value) => setState(() => _gender = value),
+                      onChanged: (String? value) {
+                        setState(() => _gender = value!);
+                      },
                       activeColor: theme.primaryColorDark,
                     ),
                     GestureDetector(
@@ -389,7 +393,7 @@ class _InfoScreenState extends State<InfoScreen> {
                 _gender.isEmpty
                     ? Text(
                         t('gender_error'),
-                        style: theme.textTheme.caption.copyWith(
+                        style: theme.textTheme.caption!.copyWith(
                           color: theme.errorColor,
                         ),
                       )

@@ -18,7 +18,7 @@ class AccountAPI {
   };
 
   static String _token(BuildContext context) {
-    return Provider.of<UserData>(context, listen: false).token;
+    return Provider.of<UserData>(context, listen: false).token!;
   }
 
   static void _refreshToken(BuildContext context) async {
@@ -113,7 +113,7 @@ class AccountAPI {
           Uri.parse('https://www.treat-min.com/media/photos/users/$id.png'));
       final photo = await request.close();
 
-      final userData = Map<String, String>.from(jsonResponse['user']);
+      final userData = jsonResponse['user'];
       userData['token'] = jsonResponse['token'];
       userData['expiry'] = jsonResponse['expiry'];
       if (photo.statusCode == 404) {
@@ -283,8 +283,8 @@ class AccountAPI {
       final account = Provider.of<UserData>(context, listen: false);
       userData.remove('password');
       userData['token'] = _token(context);
-      userData['expiry'] = account.expiry.toIso8601String().substring(0, 10);
-      userData['email'] = account.email;
+      userData['expiry'] = account.expiry!.toIso8601String().substring(0, 10);
+      userData['email'] = account.email!;
       await account.saveData(userData);
       return true;
     } else if (response.statusCode == 400) {

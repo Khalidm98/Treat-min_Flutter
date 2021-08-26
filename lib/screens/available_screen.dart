@@ -21,19 +21,20 @@ class AvailableScreen extends StatefulWidget {
 
 class _AvailableScreenState extends State<AvailableScreen> {
   // LatLng _location;
-  List _details;
+  List _details = [];
   List _filterList = [];
   List _searchList = [];
   List _cards = [];
 
-  List<City> _cities;
-  List<Area> _areas;
-  List<Hospital> _hospitals;
+  late List<City> _cities;
+  late List<Area> _areas;
+  late List<Hospital> _hospitals;
 
-  City _city;
-  Area _area;
-  Hospital _hospital;
+  City? _city;
+  Area? _area;
+  Hospital? _hospital;
 
+  bool _loading = true;
   bool _filterSelected = false;
   bool _filterOn = false;
   bool _searchOn = false;
@@ -43,9 +44,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      final entity = ModalRoute.of(context).settings.arguments;
+      final entity = ModalRoute.of(context)!.settings.arguments! as NamedEntity;
       final list = await EntityAPI.getEntityDetails(context, entity);
-      _details = [];
       if (entity is Clinic) {
         list.forEach((json) => _details.add(ClinicDetail.fromJson(json)));
         _cards = _details.map((detail) {
@@ -58,7 +58,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
         }).toList();
       }
       await _prepareFilters();
-      setState(() {});
+      setState(() => _loading = false);
     });
   }
 
@@ -95,15 +95,15 @@ class _AvailableScreenState extends State<AvailableScreen> {
 
     if (_hospital != null) {
       _filterList = _details.where((detail) {
-        return detail.hospital.name.contains(_hospital.name);
+        return detail.hospital.id == _hospital!.id;
       }).toList();
     } else if (_area != null) {
       _filterList = _details.where((detail) {
-        return detail.hospital.area == _area.id;
+        return detail.hospital.area == _area!.id;
       }).toList();
     } else if (_city != null) {
       _filterList = _details.where((detail) {
-        return detail.hospital.city == _city.id;
+        return detail.hospital.city == _city!.id;
       }).toList();
     } else {
       return;
@@ -127,7 +127,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
       return;
     }
 
-    final entity = ModalRoute.of(context).settings.arguments;
+    final entity = ModalRoute.of(context)!.settings.arguments;
     if (entity is Clinic) {
       _details.forEach((detail) {
         if (_removeWhitespace(detail.doctor.name).contains(keyword) ||
@@ -162,7 +162,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
               alignment: Alignment.center,
               child: Text(
                 t('sort_by'),
-                style: theme.textTheme.headline5.copyWith(
+                style: theme.textTheme.headline5!.copyWith(
                   color: Colors.white,
                 ),
               ),
@@ -274,10 +274,10 @@ class _AvailableScreenState extends State<AvailableScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final appData = Provider.of<AppData>(context);
-    final entity = ModalRoute.of(context).settings.arguments as NamedEntity;
+    final entity = ModalRoute.of(context)!.settings.arguments as NamedEntity;
     setAppLocalization(context);
 
-    if (_details == null) {
+    if (_loading) {
       return Scaffold(
         appBar: AppBar(title: Text(entity.name)),
         body: const Center(child: CircularProgressIndicator()),
@@ -295,7 +295,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
             Text(
               t('no_details'),
               style:
-                  theme.textTheme.headline6.copyWith(color: theme.accentColor),
+                  theme.textTheme.headline6!.copyWith(color: theme.accentColor),
               textAlign: TextAlign.center,
             ),
           ],
@@ -320,7 +320,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
       _cards = list.map((detail) {
         return ClinicCard(clinic: entity, detail: detail);
       }).toList();
-    } else {
+    } else if (entity is Service) {
       _cards = list.map((detail) {
         return ServiceCard(service: entity, detail: detail);
       }).toList();
@@ -438,15 +438,15 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                   t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                onChanged: (newValue) {
+                                onChanged: (City? newValue) {
                                   setState(() {
                                     _city = newValue;
                                     _area = null;
                                     _hospital = null;
-                                    _areas =
-                                        appData.getCityAreas(context, _city.id);
+                                    _areas = appData.getCityAreas(
+                                        context, _city!.id);
                                     _hospitals =
-                                        appData.getCityHospitals(_city.id);
+                                        appData.getCityHospitals(_city!.id);
                                   });
                                 },
                                 items: _cities.map((City city) {
@@ -485,12 +485,12 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                   _areas.isEmpty ? t('none') : t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                onChanged: (newValue) {
+                                onChanged: (Area? newValue) {
                                   setState(() {
                                     _area = newValue;
                                     _hospital = null;
                                     _hospitals =
-                                        appData.getAreaHospitals(_area.id);
+                                        appData.getAreaHospitals(_area!.id);
                                   });
                                 },
                                 items: _areas.map((Area area) {
@@ -529,7 +529,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                                   _hospitals.isEmpty ? t('none') : t('all'),
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                onChanged: (newValue) {
+                                onChanged: (Hospital? newValue) {
                                   setState(() {
                                     _hospital = newValue;
                                   });
@@ -613,7 +613,7 @@ class _AvailableScreenState extends State<AvailableScreen> {
                         onNotification:
                             (OverscrollIndicatorNotification overScroll) {
                           overScroll.disallowGlow();
-                          return;
+                          return true;
                         },
                         child: ListView.builder(
                           padding: entity is Clinic

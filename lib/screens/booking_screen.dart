@@ -39,8 +39,8 @@ class _BookingScreenState extends State<BookingScreen> {
   List<Schedule> _schedules = [];
   List<Review> _reviews = [];
 
-  Schedule _schedule = Schedule(id: -1);
-  DateTime _date = DateTime(2000);
+  Schedule? _schedule = Schedule(start: '', end: '');
+  DateTime? _date = DateTime(2000);
 
   bool _showReviews = false;
 
@@ -48,7 +48,7 @@ class _BookingScreenState extends State<BookingScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      final detail = ModalRoute.of(context).settings.arguments as Map;
+      final detail = ModalRoute.of(context)!.settings.arguments as Map;
       _entity = detail['entity'];
       _detail = detail['detail'];
       var list = await EntityAPI.getEntitySchedules(context, _entity, _detail);
@@ -62,22 +62,22 @@ class _BookingScreenState extends State<BookingScreen> {
   DateTime _defineFirstDate() {
     final now = DateTime.now();
     final first =
-        now.add(Duration(days: _weekDays[_schedule.day] - now.weekday));
+        now.add(Duration(days: _weekDays[_schedule!.day!]! - now.weekday));
     if (first.isBefore(now)) {
       return first.add(Duration(days: 7));
     }
     return first;
   }
 
-  Future<void> _selectDate(Schedule schedule) async {
+  Future<void> _selectDate() async {
     final first = _defineFirstDate();
     final picked = await showDatePicker(
       context: context,
-      initialDate: _date == null || _date == DateTime(2000) ? first : _date,
+      initialDate: _date == null || _date == DateTime(2000) ? first : _date!,
       firstDate: first,
       lastDate: first.add(Duration(days: 365)),
       selectableDayPredicate: (date) {
-        return date.weekday == _weekDays[_schedule.day];
+        return date.weekday == _weekDays[_schedule!.day!];
       },
     );
 
@@ -94,7 +94,7 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    if (_schedule == null || _schedule.id == -1) {
+    if (_schedule == null || _schedule!.id == null) {
       setState(() => _schedule = null);
       return;
     } else if (_date == null || _date == DateTime(2000)) {
@@ -103,8 +103,8 @@ class _BookingScreenState extends State<BookingScreen> {
     }
 
     final appointment = {
-      'schedule': _schedule.id,
-      'appointment_date': _date.toIso8601String().substring(0, 10)
+      'schedule': _schedule!.id,
+      'appointment_date': _date!.toIso8601String().substring(0, 10)
     };
     final response = await AppointmentAPI.reserve(
         context, _entity, _detail, appointment, _twice);
@@ -168,7 +168,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     child: Text(
                       t('reserve_twice'),
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.headline5
+                      style: theme.textTheme.headline5!
                           .copyWith(color: Colors.white),
                     ),
                   ),
@@ -219,7 +219,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     child: Text(
                       t('reserved_successfully'),
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.headline5
+                      style: theme.textTheme.headline5!
                           .copyWith(color: Colors.white),
                     ),
                   ),
@@ -331,10 +331,10 @@ class _BookingScreenState extends State<BookingScreen> {
               trailing:
                   Icon(Icons.date_range, color: theme.primaryColor, size: 30),
               onTap: () async {
-                if (_schedule == null || _schedule.id == -1) {
+                if (_schedule == null || _schedule!.id == null) {
                   setState(() => _schedule = null);
                 } else {
-                  await _selectDate(_schedule);
+                  await _selectDate();
                 }
               },
             ),
