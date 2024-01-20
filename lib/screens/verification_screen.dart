@@ -195,7 +195,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           children: <TextSpan>[
                             TextSpan(
                               text: t('resend'),
-                              style: TextStyle(color: theme.accentColor),
+                              style:
+                                  TextStyle(color: theme.colorScheme.secondary),
                               recognizer: _resendCode,
                             ),
                           ],

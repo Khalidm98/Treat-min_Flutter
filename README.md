@@ -1,4 +1,4 @@
-# treat_min
+# Treat-min
 
 A new Flutter application.
 

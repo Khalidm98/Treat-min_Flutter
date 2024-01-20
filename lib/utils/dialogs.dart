@@ -23,9 +23,9 @@ void alert(BuildContext context, String message, {void Function()? onOk}) {
           onPressed: onOk == null
               ? () => Navigator.pop(context)
               : () {
-            Navigator.pop(context);
-            onOk();
-          },
+                  Navigator.pop(context);
+                  onOk();
+                },
         ),
       ],
     ),

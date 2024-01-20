@@ -251,7 +251,7 @@ class _BookingScreenState extends State<BookingScreen> {
           padding: const EdgeInsets.all(20),
           children: [
             CircleAvatar(
-              backgroundColor: theme.accentColor,
+              backgroundColor: theme.colorScheme.secondary,
               radius: 75,
               child: CircleAvatar(
                 radius: 70,
@@ -353,7 +353,7 @@ class _BookingScreenState extends State<BookingScreen> {
               child: Text(t('book_now')),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(
-                  theme.accentColor,
+                  theme.colorScheme.secondary,
                 ),
               ),
             ),
@@ -384,7 +384,7 @@ class _BookingScreenState extends State<BookingScreen> {
                           ),
                           trailing: Icon(
                             Icons.rate_review,
-                            color: theme.accentColor,
+                            color: theme.colorScheme.secondary,
                           ),
                         )
                       ]

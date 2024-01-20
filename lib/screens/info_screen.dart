@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -62,7 +61,7 @@ class _InfoScreenState extends State<InfoScreen> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final theme = Theme.of(context);
-      final file = await ImageCropper.cropImage(
+      final file = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
         maxWidth: 400,
         maxHeight: 400,
@@ -74,7 +73,7 @@ class _InfoScreenState extends State<InfoScreen> {
           backgroundColor: Colors.white,
           dimmedLayerColor: Colors.white,
           showCropGrid: false,
-          toolbarColor: theme.accentColor,
+          toolbarColor: theme.colorScheme.secondary,
           toolbarWidgetColor: Colors.grey.shade400,
         ),
       );
@@ -117,7 +116,7 @@ class _InfoScreenState extends State<InfoScreen> {
     if (_imageChanged) {
       final dir = await getApplicationDocumentsDirectory();
       final path = '${dir.path}/user.png';
-      imageCache!.clear();
+      imageCache.clear();
       await _image!.copy(path);
       _account['photo'] = path;
     } else if (_image == null) {
@@ -207,7 +206,8 @@ class _InfoScreenState extends State<InfoScreen> {
                       height: 140,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: theme.accentColor, width: 2),
+                        border: Border.all(
+                            color: theme.colorScheme.secondary, width: 2),
                         image: DecorationImage(
                           image: (_image == null
                               ? AssetImage('assets/images/placeholder.png')
@@ -218,7 +218,7 @@ class _InfoScreenState extends State<InfoScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 100, left: 100),
                       child: CircleAvatar(
-                        backgroundColor: theme.accentColor,
+                        backgroundColor: theme.colorScheme.secondary,
                         radius: 20,
                         child: IconButton(
                           icon: Icon(
