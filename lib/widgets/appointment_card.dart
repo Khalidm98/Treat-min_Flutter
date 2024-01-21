@@ -192,14 +192,15 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: theme.accentColor,
+                    color: theme.colorScheme.secondary,
                     borderRadius: langCode == 'en'
                         ? BorderRadius.only(topRight: Radius.circular(5))
                         : BorderRadius.only(topLeft: Radius.circular(5)),
                   ),
                   child: Text(
                     widget.appointment.hospital,
-                    style: theme.textTheme.button!.copyWith(color: Colors.white),
+                    style:
+                        theme.textTheme.button!.copyWith(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -220,7 +221,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
                           )
                         : widget.appointment.status == "A"
                             ? OutlinedButton(
-                                style: theme.outlinedButtonTheme.style!.copyWith(
+                                style:
+                                    theme.outlinedButtonTheme.style!.copyWith(
                                   side: MaterialStateProperty.all<BorderSide>(
                                     BorderSide(color: theme.primaryColor),
                                   ),
@@ -228,7 +230,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                       MaterialStateProperty.all<Color>(
                                     theme.primaryColor.withOpacity(0.2),
                                   ),
-                                  overlayColor: MaterialStateProperty.all<Color>(
+                                  overlayColor:
+                                      MaterialStateProperty.all<Color>(
                                     theme.primaryColor.withOpacity(0.4),
                                   ),
                                   foregroundColor:
@@ -245,7 +248,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: theme.accentColor,
+                    color: theme.colorScheme.secondary,
                     borderRadius: langCode == 'en'
                         ? BorderRadius.only(bottomRight: Radius.circular(5))
                         : BorderRadius.only(bottomLeft: Radius.circular(5)),

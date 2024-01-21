@@ -83,10 +83,12 @@ class _MyAppState extends State<MyApp> {
           primaryColor: _green,
           primaryColorDark: _greenDark,
           primaryColorLight: _greenLight,
-          accentColor: _blue,
-          errorColor: _red,
           dividerColor: _blue,
-          colorScheme: ColorScheme.light(primary: _green),
+          colorScheme: ColorScheme.light(
+            primary: _green,
+            secondary: _blue,
+            error: _red,
+          ),
           appBarTheme: const AppBarTheme(centerTitle: true),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(

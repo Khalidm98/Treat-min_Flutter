@@ -35,7 +35,7 @@ class GetStartedScreen extends StatelessWidget {
                         child: Text(t('log_in')),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
-                            Theme.of(context).accentColor,
+                            Theme.of(context).colorScheme.secondary,
                           ),
                           minimumSize: MaterialStateProperty.all<Size>(
                             const Size(0, 40),

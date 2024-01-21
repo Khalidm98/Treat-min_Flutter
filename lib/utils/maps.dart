@@ -7,7 +7,6 @@ import 'package:google_maps_webservice/places.dart';
 import 'google_api_key.dart';
 import '../localizations/app_localizations.dart';
 
-
 double distance(LatLng location1, LatLng location2) {
   final lat1 = location1.latitude;
   final lon1 = location1.longitude;

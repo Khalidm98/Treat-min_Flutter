@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -294,8 +293,8 @@ class _AvailableScreenState extends State<AvailableScreen> {
             const SizedBox(height: 20),
             Text(
               t('no_details'),
-              style:
-                  theme.textTheme.headline6!.copyWith(color: theme.accentColor),
+              style: theme.textTheme.headline6!
+                  .copyWith(color: theme.colorScheme.secondary),
               textAlign: TextAlign.center,
             ),
           ],

@@ -15,7 +15,7 @@ class AccountScreen extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: ListTile(
         title: Text(t('no_reservations')),
-        trailing: Icon(Icons.book, color: theme.accentColor),
+        trailing: Icon(Icons.book, color: theme.colorScheme.secondary),
       ),
     );
   }
@@ -23,7 +23,7 @@ class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final accent = theme.accentColor;
+    final accent = theme.colorScheme.secondary;
     final userData = Provider.of<UserData>(context);
     setAppLocalization(context);
 
@@ -71,8 +71,9 @@ class AccountScreen extends StatelessWidget {
                 border: Border.all(color: accent, width: 2),
                 image: DecorationImage(
                   image: (userData.photo!.isEmpty
-                      ? AssetImage('assets/images/placeholder.png')
-                      : FileImage(File(userData.photo!))) as ImageProvider<Object>,
+                          ? AssetImage('assets/images/placeholder.png')
+                          : FileImage(File(userData.photo!)))
+                      as ImageProvider<Object>,
                 ),
               ),
               alignment: Alignment.topRight,

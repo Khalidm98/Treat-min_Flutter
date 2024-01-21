@@ -28,16 +28,18 @@ class UserData with ChangeNotifier {
     current = jsonData['current']['clinics'].map<Appointment>((json) {
       return Appointment.fromJson(json);
     }).toList();
-    current = current! + jsonData['current']['services'].map<Appointment>((json) {
-      return Appointment.fromJson(json);
-    }).toList();
+    current = current! +
+        jsonData['current']['services'].map<Appointment>((json) {
+          return Appointment.fromJson(json);
+        }).toList();
 
     past = jsonData['past']['clinics'].map<Appointment>((json) {
       return Appointment.fromJson(json);
     }).toList();
-    past = past! + jsonData['past']['services'].map<Appointment>((json) {
-      return Appointment.fromJson(json);
-    }).toList();
+    past = past! +
+        jsonData['past']['services'].map<Appointment>((json) {
+          return Appointment.fromJson(json);
+        }).toList();
 
     notifyListeners();
   }

@@ -34,7 +34,7 @@ class _NavigationBarState extends State<NavigationBar> {
     Future.delayed(Duration.zero, () {
       setState(() {
         _width = MediaQuery.of(context).size.width;
-        _indicatorColor = Theme.of(context).accentColor;
+        _indicatorColor = Theme.of(context).colorScheme.secondary;
       });
     });
   }
